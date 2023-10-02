@@ -1,0 +1,11 @@
+1. Color palletes :
+	- https://coolors.co/b80c09-6b2b06-a88976-e5e7e6-b7b5b3-66645a-141301
+	- https://coolors.co/efc69b-af1b3f-473144-ccb69b-df9b6d
+	- https://coolors.co/335c67-fff3b0-e09f3e-9e2a2b-540b0e
+
+2. Model app : 
+	- https://www.tassis.ro/
+
+3. SVG icons
+	- https://www.svgrepo.com/collection/wave-oval-interface-icons/
+	- https://www.svgrepo.com/collection/iconsax-line-oval-icons/
