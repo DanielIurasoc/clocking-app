@@ -3,6 +3,9 @@
 	- https://coolors.co/efc69b-af1b3f-473144-ccb69b-df9b6d
 	- https://coolors.co/335c67-fff3b0-e09f3e-9e2a2b-540b0e
 
+	- https://colorhunt.co/palette/006e7ff8cb2eee5007b22727
+	- https://huemint.com/website-2/#palette=1d1c2d-f89f30-db2a48-00ada0
+
 2. Model app : 
 	- https://www.tassis.ro/
 

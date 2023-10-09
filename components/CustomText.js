@@ -15,7 +15,7 @@ const CustomText = (props) => {
 const styles = StyleSheet.create({
   text: {
     fontSize: 16,
-    fontFamily: 'antipasto-regular',
+    fontFamily: 'poppins-regular',
   },
 });
 
