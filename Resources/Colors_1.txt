@@ -1,0 +1,24 @@
+Dark: #1d1c2d
+Primary: #db2a48 (red)
+Accent: #f89f30 (yellow)
+Secondary: #00ada0 (turcoise)
+
+Primary shades:
+
+#F8E4E4, #ECB9BA, #D48586, #B85153, #9E2A2B, #78181A, #5E0D0E, #380405, #230101 
+
+Yellow shades:
+
+#FCF1E3, #FCE1C0, #F8C586, #F3AC55, #f89f30, #CE7E1C, #A5610D, #7D4705, #392001 
+
+Secondary shades:
+
+#E2FAF8, #A0EFE9, #5AEADE, #23D0C2, #00ada0, #007F74, #005A53, #003833, #002825
+
+Green shades:
+
+#F0FCEE, #B6F5AB, #80DB71, #4DC438, #2CAF15, #1C8609, #115F03, #0C4402, #072B00 
+
+Dark shades:
+
+#EBEAF3, #B9B7C7, #777689, #363545, #1d1c2d, #0E0D1D, #090718, #050318, #020017 

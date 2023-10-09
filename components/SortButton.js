@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   button: {
     width: 70,
     height: 30,
-    backgroundColor: Colors.accent,
+    backgroundColor: Colors.primary1,
     justifyContent: 'center',
     borderRadius: 15,
     overflow: 'hidden',
@@ -45,17 +45,17 @@ const styles = StyleSheet.create({
   },
 
   arrows: {
-    fontFamily: 'antipasto-light',
+    fontFamily: 'poppins-light',
     fontSize: 35,
     lineHeight: 35,
-    color: Colors.secondary,
+    color: Colors.primary5,
   },
 
   line: {
-    fontFamily: 'antipasto-light',
+    fontFamily: 'poppins-light',
     fontSize: 40,
     lineHeight: 40,
-    color: Colors.secondary,
+    color: Colors.primary5,
     marginTop: -5,
   },
 });

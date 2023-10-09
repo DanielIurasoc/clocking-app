@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 
 import CustomText from '../../components/CustomText.js';
 
@@ -9,6 +9,18 @@ const CreateAccountScreen = (props) => {
       <CustomText style={styles.text}>
         This is the Create Account Screen!
       </CustomText>
+      <Button
+        title="Create Account"
+        onPress={() => {
+          props.navigation.navigate('Home');
+        }}
+      />
+      <Button
+        title="Login"
+        onPress={() => {
+          props.navigation.navigate('Login');
+        }}
+      />
     </View>
   );
 };

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     elevation: 10,
 
     borderRadius: 30,
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.primary2,
     marginHorizontal: 20,
     marginTop: 20,
   },
@@ -46,15 +46,15 @@ const styles = StyleSheet.create({
   },
 
   index: {
-    fontFamily: 'antipasto-bold',
+    fontFamily: 'poppins-bold',
     fontSize: 30,
     color: Colors.primary,
   },
 
   title: {
-    fontFamily: 'antipasto-regular',
+    fontFamily: 'poppins-regular',
     fontSize: 30,
-    color: Colors.primary,
+    color: Colors.primary5,
     width: 280,
   },
 });
