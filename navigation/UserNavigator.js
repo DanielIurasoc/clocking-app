@@ -174,6 +174,7 @@ function BottomTabsNavigator() {
         tabBarActiveTintColor: '#9E2A2B',
         tabBarStyle: {
           backgroundColor: Colors.primary5,
+          height: 70,
         },
         tabBarInactiveTintColor: Colors.primary2,
         tabBarActiveTintColor: Colors.dark6,
@@ -183,8 +184,8 @@ function BottomTabsNavigator() {
         name={'Home'}
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcon name="home" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcon name="home" size={40} color={color} />
           ),
         }}
       />
@@ -192,10 +193,10 @@ function BottomTabsNavigator() {
         name={'Clockings'}
         component={ClockingsStackNavigator}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <MaterialCommunityIcon
               name="clipboard-text-clock"
-              size={size}
+              size={35}
               color={color}
             />
           ),
@@ -205,8 +206,8 @@ function BottomTabsNavigator() {
         name={'Statistics'}
         component={StatisticsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcon name="chart-bar" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcon name="chart-bar" size={35} color={color} />
           ),
         }}
       />
@@ -214,12 +215,8 @@ function BottomTabsNavigator() {
         name={'Account'}
         component={AccountScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcon
-              name="account-cog"
-              size={size}
-              color={color}
-            />
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcon name="account-cog" size={35} color={color} />
           ),
         }}
       />
