@@ -10,9 +10,9 @@ const SortButton = (props) => {
       onPress={props.onSortPress}
     >
       <View style={styles.textContainer}>
-        <Text style={styles.arrows}> ↑ </Text>
+        <Text style={styles.arrows}>↑ </Text>
         <Text style={styles.line}>|</Text>
-        <Text style={styles.arrows}> ↓ </Text>
+        <Text style={styles.arrows}> ↓</Text>
       </View>
     </TouchableOpacity>
   );
@@ -22,10 +22,11 @@ const styles = StyleSheet.create({
   button: {
     width: 70,
     height: 30,
-    backgroundColor: Colors.primary1,
+    backgroundColor: Colors.secondary8,
     justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 15,
-    overflow: 'hidden',
+    //overflow: 'hidden',
 
     //iOS
     shadowColor: 'black',
@@ -38,25 +39,26 @@ const styles = StyleSheet.create({
   },
 
   textContainer: {
-    height: 30,
+    //height: 30,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   arrows: {
-    fontFamily: 'poppins-light',
-    fontSize: 35,
-    lineHeight: 35,
-    color: Colors.primary5,
+    fontFamily: 'poppins-800',
+    fontSize: 28,
+    lineHeight: 28,
+    color: Colors.accent1,
+    paddingVertical: 5,
   },
 
   line: {
     fontFamily: 'poppins-light',
     fontSize: 40,
     lineHeight: 40,
-    color: Colors.primary5,
-    marginTop: -5,
+    color: Colors.accent1,
   },
 });
 

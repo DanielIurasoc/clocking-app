@@ -1,14 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 
 import Colors from '../constants/Colors.js';
 import commonStyles from './commonStyles.js';
-//import LogoImg from '../Resources/logo_temp.png';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeHeader = (props) => {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerLogoContainer}>
+        <TouchableOpacity
+          onPress={props.onButtonPress}
+          style={styles.drawerButton}
+        >
+          <MaterialCommunityIcon name="menu" size={30} color={Colors.dark5} />
+        </TouchableOpacity>
         <Image
           source={require('../Resources/logo_temp.png')}
           style={styles.logoImage}
@@ -20,8 +34,7 @@ const HomeHeader = (props) => {
           style={styles.accountImage}
         />
         <Text style={{ ...commonStyles.text, ...styles.welcomeText }}>
-          {' '}
-          Welcome, John M. Smithsenn{' '}
+          Welcome, John M. Smithsenn
         </Text>
       </View>
     </View>
@@ -43,13 +56,24 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     backgroundColor: Colors.primary5,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
 
+  drawerButton: {
+    alignSelf: 'flex-start',
+    paddingTop: 32,
+    paddingLeft: 20,
+    marginLeft: '0%',
+  },
+
   logoImage: {
-    width: 250,
-    height: 100,
+    width: Dimensions.get('window').width * 0.6,
+    maxHeight: 100,
+    //height: '100%',
+    marginRight: '20%',
+    resizeMode: 'stretch',
   },
 
   accountContainer: {
