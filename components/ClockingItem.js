@@ -1,7 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 
-import CustomText from './CustomText.js';
+import commonStyles from './commonStyles.js';
 import Colors from '../constants/Colors.js';
 
 const ClockingItem = (props) => {
@@ -9,9 +15,24 @@ const ClockingItem = (props) => {
     <View style={styles.entryCard}>
       <TouchableOpacity style={styles.button} onPress={props.onCardPress}>
         <Text style={styles.index}> #{props.index + 1} </Text>
-        <Text style={styles.title} numberOfLines={1}>
-          {props.title}
-        </Text>
+        <View style={styles.content}>
+          <Text
+            style={{ ...commonStyles.text, ...styles.location }}
+            numberOfLines={1}
+          >
+            {props.location}
+          </Text>
+          <Text
+            style={{ ...commonStyles.text, ...styles.dateAndTime }}
+            numberOfLines={1}
+          >
+            {props.date.toLocaleDateString('ro-RO') +
+              ', ' +
+              props.startTime +
+              ' - ' +
+              props.endTime}
+          </Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -19,8 +40,11 @@ const ClockingItem = (props) => {
 
 const styles = StyleSheet.create({
   entryCard: {
-    height: 50,
-    width: '90%',
+    height: 60,
+    width: Dimensions.get('window').width * 0.9, //'100%',
+
+    alignItems: 'center',
+    justifyContent: 'center',
 
     //iOS
     shadowColor: 'black',
@@ -31,30 +55,50 @@ const styles = StyleSheet.create({
     // android
     elevation: 10,
 
-    borderRadius: 30,
-    backgroundColor: Colors.primary2,
-    marginHorizontal: 20,
-    marginTop: 20,
+    borderRadius: 20,
+    backgroundColor: Colors.primary5,
+    marginTop: 16,
   },
 
   button: {
-    flex: 1,
+    width: '90%',
+    height: 50,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
+  },
+
+  content: {
+    //width: '90%',
+    //flex: 1,
+    height: 50,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginTop: 7,
   },
 
   index: {
-    fontFamily: 'poppins-bold',
-    fontSize: 30,
-    color: Colors.primary,
+    fontFamily: 'poppins-medium',
+    fontSize: 28,
+    height: 60,
+    paddingVertical: 11,
+    color: Colors.accent1,
+    paddingHorizontal: 20,
   },
 
-  title: {
-    fontFamily: 'poppins-regular',
-    fontSize: 30,
-    color: Colors.primary5,
+  location: {
+    fontSize: 16,
+    lineHeight: 20,
+    color: Colors.dark5,
+    width: 280,
+  },
+
+  dateAndTime: {
+    fontSize: 20,
+    lineHeight: 24,
+    color: Colors.dark5,
     width: 280,
   },
 });

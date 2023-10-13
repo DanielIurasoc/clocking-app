@@ -20,9 +20,13 @@ const HomeScreen = (props) => {
     }, [dispatch])
   );
 
+  const onDrawerButtonPress = () => {
+    props.navigation.openDrawer();
+  };
+
   return (
     <View style={styles.container}>
-      <HomeHeader />
+      <HomeHeader onButtonPress={onDrawerButtonPress} />
       <View style={styles.mainContainer}>
         <CustomText style={styles.mainHeader}>Work details below :</CustomText>
         <HomeButton
