@@ -3,14 +3,15 @@ import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-import commonStyles from './commonStyles.js';
-import Colors from '../constants/Colors.js';
+import commonStyles from '../commonStyles.js';
+import Colors from '../../constants/Colors.js';
 
-const DrawerButton = ({ iconName, title, isActive, style }) => {
+const DrawerButton = ({ iconName, title, isActive, onPress, style }) => {
   return (
     <TouchableOpacity
       style={{ ...styles.button, ...style }}
       disabled={!isActive}
+      onPress={onPress}
     >
       <MaterialIcon
         name={iconName}

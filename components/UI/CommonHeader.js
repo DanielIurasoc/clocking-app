@@ -10,8 +10,8 @@ import {
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Colors from '../constants/Colors.js';
-import commonStyles from './commonStyles.js';
+import Colors from '../../constants/Colors.js';
+import commonStyles from '../commonStyles.js';
 
 const CommonHeader = (props) => {
   return (
@@ -27,7 +27,7 @@ const CommonHeader = (props) => {
       <View style={styles.accountContainer}>
         <TouchableOpacity onPress={props.onButtonPress}>
           <Image
-            source={require('../Resources/account_photo.jpg')}
+            source={require('../../Resources/account_photo.jpg')}
             style={styles.accountImage}
           />
         </TouchableOpacity>

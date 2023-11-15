@@ -7,14 +7,14 @@ import ClockingItem from '../../components/ClockingItem.js';
 import SortButton from '../../components/SortButton.js';
 
 import commonStyles from '../../components/commonStyles.js';
-import CommonHeader from '../../components/CommonHeader.js';
-import { setActiveScreen } from '../../store/actions/activeScreen.js';
+import CommonHeader from '../../components/UI/CommonHeader.js';
+import * as appDataActions from '../../store/actions/appData.js';
 
 const ClockingsScreen = (props) => {
   const dispatch = useDispatch();
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(setActiveScreen('Clockings'));
+      dispatch(appDataActions.setActiveScreen('Clockings'));
     }, [dispatch])
   );
 

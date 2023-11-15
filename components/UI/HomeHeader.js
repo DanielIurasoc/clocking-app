@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import Colors from '../constants/Colors.js';
-import commonStyles from './commonStyles.js';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Colors from '../../constants/Colors.js';
+import commonStyles from '../commonStyles.js';
 
 const HomeHeader = (props) => {
   return (
@@ -24,13 +24,13 @@ const HomeHeader = (props) => {
           <MaterialCommunityIcon name="menu" size={30} color={Colors.dark5} />
         </TouchableOpacity>
         <Image
-          source={require('../Resources/logo_temp.png')}
+          source={require('../../Resources/logo_temp.png')}
           style={styles.logoImage}
         />
       </View>
       <View style={styles.accountContainer}>
         <Image
-          source={require('../Resources/account_photo.jpg')}
+          source={require('../../Resources/account_photo.jpg')}
           style={styles.accountImage}
         />
         <Text style={{ ...commonStyles.text, ...styles.welcomeText }}>
