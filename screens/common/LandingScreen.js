@@ -48,11 +48,12 @@ const styles = StyleSheet.create({
   image: {
     height: Dimensions.get('screen').height,
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
 
   header: {
+    paddingHorizontal: '10%',
     marginTop: Dimensions.get('screen').height * 0.2,
+    alignItems: 'flex-start',
   },
 
   title: {
@@ -66,6 +67,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
+    marginLeft: '10%',
     width: Dimensions.get('screen').width * 0.8,
     marginBottom: Dimensions.get('screen').height * 0.2,
   },
