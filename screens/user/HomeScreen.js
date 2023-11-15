@@ -1,22 +1,21 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
 import { useDispatch } from 'react-redux';
 
-import { setActiveScreen } from '../../store/actions/activeScreen.js';
+import * as appDataActions from '../../store/actions/appData.js';
 
 import Colors from '../../constants/Colors.js';
 import commonStyles from '../../components/commonStyles.js';
 import CustomText from '../../components/CustomText.js';
-import HomeHeader from '../../components/HomeHeader.js';
-import HomeButton from '../../components/HomeButton.js';
+import HomeHeader from '../../components/UI/HomeHeader.js';
+import HomeButton from '../../components/UI/HomeButton.js';
 
 const HomeScreen = (props) => {
   const dispatch = useDispatch();
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(setActiveScreen('Home'));
+      dispatch(appDataActions.setActiveScreen('Home'));
     }, [dispatch])
   );
 

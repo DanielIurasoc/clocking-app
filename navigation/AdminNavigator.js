@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Platform } from 'react-native';
@@ -18,7 +18,7 @@ import StatisticsScreen from '../screens/common/StatisticsScreen.js';
 import AccountScreen from '../screens/common/AccountScreen.js';
 
 // create the stack navigator
-const myStack = createNativeStackNavigator();
+const myStack = createStackNavigator();
 const myBottomTab = createBottomTabNavigator();
 
 function StackNavigator() {

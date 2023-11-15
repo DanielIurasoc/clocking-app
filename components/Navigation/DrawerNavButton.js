@@ -3,9 +3,8 @@ import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import commonStyles from './commonStyles.js';
-import Colors from '../constants/Colors.js';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import commonStyles from '../commonStyles.js';
+import Colors from '../../constants/Colors.js';
 
 const DrawerNavButton = ({
   iconName,

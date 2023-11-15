@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import commonStyles from './commonStyles';
-import Colors from '../constants/Colors';
+import commonStyles from '../commonStyles';
+import Colors from '../../constants/Colors';
 
 const HomeButton = (props) => {
   return (

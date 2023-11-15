@@ -1,22 +1,30 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
+import LandingScreen from '../screens/common/LandingScreen.js';
 import LoginScreen from '../screens/common/LoginScreen.js';
-import CreateAccountScreen from '../screens/user/CreateAccountScreen.js';
+import RegisterScreen from '../screens/user/RegisterScreen.js';
 
 // create the stack navigator
-const myStack = createNativeStackNavigator();
+const myStack = createStackNavigator();
 
 function StackNavigator() {
   return (
     <myStack.Navigator
-      initialRouteName="Login"
+      initialRouteName="Landing"
       screenOptions={{
         headerShown: false,
       }}
       backBehaviour="history"
     >
+      <myStack.Screen
+        name="Landing"
+        component={LandingScreen}
+        options={{
+          title: 'Landing',
+        }}
+      />
       <myStack.Screen
         name="Login"
         component={LoginScreen}
@@ -26,7 +34,7 @@ function StackNavigator() {
       />
       <myStack.Screen
         name="Register"
-        component={CreateAccountScreen}
+        component={RegisterScreen}
         options={{
           title: 'Register',
         }}

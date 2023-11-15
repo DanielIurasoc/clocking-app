@@ -1,17 +1,17 @@
 import React from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet } from 'react-native';
-
-import CustomText from '../../components/CustomText.js';
 import { useDispatch } from 'react-redux';
 
-import { setActiveScreen } from '../../store/actions/activeScreen.js';
+import CustomText from '../../components/CustomText.js';
+
+import * as appDataActions from '../../store/actions/appData.js';
 
 const AccountScreen = (props) => {
   const dispatch = useDispatch();
   useFocusEffect(
     React.useCallback(() => {
-      dispatch(setActiveScreen('Account'));
+      dispatch(appDataActions.setActiveScreen('Account'));
     }, [dispatch])
   );
 

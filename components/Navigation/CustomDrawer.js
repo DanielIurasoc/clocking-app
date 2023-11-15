@@ -1,35 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   ImageBackground,
-  Button,
+  InteractionManager,
 } from 'react-native';
-import {
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from '@react-navigation/drawer';
-
-import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDispatch, useSelector } from 'react-redux';
 
 import DrawerButton from './DrawerButton.js';
-import commonStyles from './commonStyles.js';
+import DrawerNavButton from './DrawerNavButton.js';
+import commonStyles from '../commonStyles.js';
 
-import Colors from '../constants/Colors.js';
+import * as appDataActions from '../../store/actions/appData.js';
 
-const CustomDrawer = (props) => {
+import Colors from '../../constants/Colors.js';
+
+const CustomDrawerNew = (props) => {
+  const dispatch = useDispatch();
+  const activeScreen = useSelector((state) => state.appData.activeScreen);
+
+  const logoutHandler = () => {
+    dispatch(appDataActions.setNavigationFlow('auth'));
+  };
+
   return (
     <View style={styles.drawerContainer}>
       <ImageBackground
-        source={require('../Resources/headerBackground.png')}
+        source={require('../../Resources/headerBackground.png')}
         style={styles.drawerHeader}
       >
         <Image
-          source={require('../Resources/account_photo.jpg')}
+          source={require('../../Resources/account_photo.jpg')}
           style={styles.accountImage}
         />
         <View style={styles.accountDetailsContainer}>
@@ -46,23 +49,64 @@ const CustomDrawer = (props) => {
       </ImageBackground>
 
       <View style={styles.drawerContent}>
-        <DrawerContentScrollView
-          {...props}
-          contentContainerStyle={styles.listContainer}
-        >
-          <View style={styles.navigationContainer}>
-            <DrawerItemList {...props} />
-          </View>
-        </DrawerContentScrollView>
-
-        <Button
-          title="Home"
-          onPress={() => {
-            props.navigation.navigate('BottomTabNavigator', {
-              screen: 'Home2',
-            });
-          }}
-        />
+        <View style={styles.navigationContainer}>
+          <DrawerNavButton
+            iconName="home"
+            title="Home"
+            isActive={activeScreen === 'Home' ? true : false}
+            onButtonPress={() =>
+              InteractionManager.runAfterInteractions(() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate('BottomTabsNavigator', {
+                  screen: 'Home',
+                });
+              })
+            }
+            style={{}}
+          />
+          <DrawerNavButton
+            iconName="view-list"
+            title="My Clockings"
+            isActive={activeScreen === 'Clockings' ? true : false}
+            onButtonPress={() =>
+              InteractionManager.runAfterInteractions(() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate('BottomTabsNavigator', {
+                  screen: 'Clockings',
+                });
+              })
+            }
+            style={{}}
+          />
+          <DrawerNavButton
+            iconName="chart-bar"
+            title="Statistics"
+            isActive={activeScreen === 'Statistics' ? true : false}
+            onButtonPress={() =>
+              InteractionManager.runAfterInteractions(() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate('BottomTabsNavigator', {
+                  screen: 'Statistics',
+                });
+              })
+            }
+            style={{ height: 50 }}
+          />
+          <DrawerNavButton
+            iconName="cog"
+            title="Account Settings"
+            isActive={activeScreen === 'Account' ? true : false}
+            onButtonPress={() =>
+              InteractionManager.runAfterInteractions(() => {
+                props.navigation.closeDrawer();
+                props.navigation.navigate('BottomTabsNavigator', {
+                  screen: 'Account',
+                });
+              })
+            }
+            style={{}}
+          />
+        </View>
 
         {/* <View style={styles.line1} /> */}
 
@@ -83,6 +127,7 @@ const CustomDrawer = (props) => {
               title={'Log out'}
               iconName={'logout'}
               isActive={true}
+              onPress={logoutHandler}
             />
             <DrawerButton
               title={'Send us feedback'}
@@ -167,7 +212,7 @@ const styles = StyleSheet.create({
   },
 
   navigationContainer: {
-    paddingVertical: 10,
+    paddingVertical: 20,
     marginBottom: 0,
   },
 
@@ -245,4 +290,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomDrawer;
+export default CustomDrawerNew;
