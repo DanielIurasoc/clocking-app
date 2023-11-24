@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,12 @@ import {
   ImageBackground,
   Dimensions,
   StatusBar,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 
+import * as authActions from '../../store/actions/auth.js';
 import * as appDataActions from '../../store/actions/appData.js';
 
 import commonStyles from '../../components/commonStyles.js';
@@ -18,15 +21,91 @@ import StandardButton from '../../components/Auth/AuthButton.js';
 import SocialLink from '../../components/Auth/SocialLink.js';
 import AuthInput from '../../components/Auth/AuthInput.js';
 
+const FORM_UPDATE = 'FORM_UPDATE';
+
+const formReducer = (state, action) => {
+  switch (action.type) {
+    case FORM_UPDATE:
+      const updatedValues = {
+        ...state.inputValues,
+        [action.input]: action.value,
+      };
+      const updatedValidities = {
+        ...state.inputValidities,
+        [action.input]: action.isValid,
+      };
+
+      let updatedFormIsValid = true;
+      for (const key in updatedValidities) {
+        updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+      }
+
+      return {
+        inputValues: updatedValues,
+        inputValidities: updatedValidities,
+        formIsValid: updatedFormIsValid,
+      };
+    default:
+      return state;
+  }
+};
+
 const LoginScreen = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorOccured, setErrorOccured] = useState(undefined);
+
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      email: '',
+      password: '',
+    },
+    inputValidities: {
+      email: false,
+      password: false,
+    },
+    formIsValid: false,
+  });
+
   const dispatch = useDispatch();
 
-  const loginHandler = () => {
-    // dispatch login action
+  useEffect(() => {
+    if (errorOccured) {
+      Alert.alert('An error occured', errorOccured, [{ text: 'Ok' }]);
+    }
+  }, [errorOccured]);
 
-    // change the app flow if the login is successful
-    dispatch(appDataActions.setNavigationFlow('user'));
+  const loginHandler = async () => {
+    setErrorOccured(null);
+    setIsLoading(true);
+
+    // dispatch login action
+    try {
+      await dispatch(
+        authActions.login(
+          formState.inputValues.email,
+          formState.inputValues.password
+        )
+      );
+
+      // change the app flow if the login is successful
+      dispatch(appDataActions.setNavigationFlow('user'));
+    } catch (error) {
+      setErrorOccured(error.message);
+      setIsLoading(false);
+    }
   };
+
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState]
+  );
 
   return (
     <View style={styles.container}>
@@ -46,10 +125,35 @@ const LoginScreen = (props) => {
             Welcome back!
           </Text>
           <View style={styles.group}>
-            {/* email input */}
-            <AuthInput style={styles.email} label="email" />
-            {/* password input */}
-            <AuthInput style={styles.password} label="password" />
+            <AuthInput
+              id="email"
+              // validities
+              required
+              email
+              // customizations
+              placeholder="e-mail"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              initialValue=""
+              errorMessage="enter a valid email address"
+              // actions
+              onInputChange={inputChangeHandler}
+            />
+            <AuthInput
+              id="password"
+              // validities
+              required
+              minLength={8}
+              // customizations
+              placeholder="password"
+              secureTextEntry
+              autoCapitalize="none"
+              keyboardType="default"
+              initialValue=""
+              errorMessage="enter a stronger password"
+              // actions
+              onInputChange={inputChangeHandler}
+            />
             <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
               <Text
                 style={{ ...commonStyles.text, ...styles.forgotButtonText }}
@@ -58,11 +162,17 @@ const LoginScreen = (props) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <StandardButton
-            style={styles.loginButton}
-            title1="Log in"
-            onPress={loginHandler}
-          />
+          <View style={styles.group2}>
+            {isLoading ? (
+              <ActivityIndicator size="large" color={Colors.primary5} />
+            ) : (
+              <StandardButton
+                style={styles.loginButton}
+                title1="Log in"
+                onPress={loginHandler}
+              />
+            )}
+          </View>
           <View style={styles.signInContent}>
             <Text style={styles.noAccountText}>No account?</Text>
             <TouchableOpacity
@@ -124,6 +234,11 @@ const styles = StyleSheet.create({
 
   group: {
     width: '100%',
+  },
+
+  group2: {
+    width: '100%',
+    alignItems: 'center',
   },
 
   email: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,29 +7,114 @@ import {
   ImageBackground,
   Dimensions,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import CheckBox from 'expo-checkbox';
 import { useDispatch } from 'react-redux';
 
 import * as appDataActions from '../../store/actions/appData.js';
+import * as authActions from '../../store/actions/auth.js';
 
 import commonStyles from '../../components/commonStyles.js';
 import Colors from '../../constants/Colors.js';
 import StandardButton from '../../components/Auth/AuthButton.js';
-import SocialLink from '../../components/Auth/SocialLink.js';
 import AuthInput from '../../components/Auth/AuthInput.js';
 
+const FORM_UPDATE = 'FORM_UPDATE';
+
+const formReducer = (state, action) => {
+  switch (action.type) {
+    case FORM_UPDATE:
+      const updatedValues = {
+        ...state.inputValues,
+        [action.input]: action.value,
+      };
+      const updatedValidities = {
+        ...state.inputValidities,
+        [action.input]: action.isValid,
+      };
+
+      let updatedFormIsValid = true;
+      for (const key in updatedValidities) {
+        updatedFormIsValid = updatedFormIsValid && updatedValidities[key];
+      }
+
+      return {
+        inputValues: updatedValues,
+        inputValidities: updatedValidities,
+        formIsValid: updatedFormIsValid,
+      };
+    default:
+      return state;
+  }
+};
+
 const RegisterScreen = (props) => {
-  const [isSelected, setIsSelected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorOccured, setErrorOccured] = useState(undefined);
+
+  const [formState, dispatchFormState] = useReducer(formReducer, {
+    inputValues: {
+      fullname: '',
+      phone: '',
+      email: '',
+      password: '',
+      confirm: '',
+      toc: false,
+    },
+    inputValidities: {
+      fullname: false,
+      phone: false,
+      email: false,
+      password: false,
+      confirm: false,
+      toc: false,
+    },
+    formIsValid: false,
+  });
 
   const dispatch = useDispatch();
 
-  const registerHandler = () => {
-    // dispatch login action
+  useEffect(() => {
+    if (errorOccured) {
+      Alert.alert('An error occured', errorOccured, [{ text: 'Ok' }]);
+    }
+  }, [errorOccured]);
 
-    // change the app flow if the login is successful
-    dispatch(appDataActions.setNavigationFlow('user'));
+  const registerHandler = async () => {
+    setErrorOccured(null);
+    setIsLoading(true);
+
+    // dispatch register action
+    try {
+      await dispatch(
+        authActions.signup(
+          formState.inputValues.fullname,
+          formState.inputValues.phone,
+          formState.inputValues.email,
+          formState.inputValues.password
+        )
+      );
+
+      // go to the login page if successful
+      props.navigation.navigate('Login');
+    } catch (error) {
+      setErrorOccured(error.message);
+      setIsLoading(false);
+    }
   };
+
+  const inputChangeHandler = useCallback(
+    (inputIdentifier, inputValue, inputValidity) => {
+      dispatchFormState({
+        type: FORM_UPDATE,
+        value: inputValue,
+        isValid: inputValidity,
+        input: inputIdentifier,
+      });
+    },
+    [dispatchFormState]
+  );
 
   return (
     <View style={styles.container}>
@@ -54,18 +139,90 @@ const RegisterScreen = (props) => {
             </Text>
           </View>
           <View style={styles.group2}>
-            {/* email input */}
-            <AuthInput style={styles.label} label="Full Name" />
-            {/* password input */}
-            <AuthInput style={styles.label} label="Phone Number" />
-            <AuthInput style={styles.label} label="Email" />
-            <AuthInput style={styles.label} label="Password" />
-            <AuthInput style={styles.label} label="Confirm Password" />
+            <AuthInput
+              id="fullname"
+              // validities
+              required
+              minLength={6}
+              // customizations
+              placeholder="full name"
+              autoCapitalize="none"
+              keyboardType="default"
+              initialValue=""
+              errorMessage="enter your full name"
+              // actions
+              onInputChange={inputChangeHandler}
+            />
+            <AuthInput
+              id="phone"
+              // validities
+              required
+              minLength={8}
+              // customizations
+              placeholder="phone number"
+              autoCapitalize="none"
+              keyboardType="phone-pad"
+              initialValue=""
+              errorMessage="enter your phone number"
+              // actions
+              onInputChange={inputChangeHandler}
+            />
+
+            <AuthInput
+              id="email"
+              // validities
+              required
+              email
+              // customizations
+              placeholder="e-mail"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              initialValue=""
+              errorMessage="enter a valid email address"
+              // actions
+              onInputChange={inputChangeHandler}
+            />
+            <AuthInput
+              id="password"
+              // validities
+              required
+              minLength={8}
+              // customizations
+              placeholder="password"
+              secureTextEntry
+              autoCapitalize="none"
+              keyboardType="default"
+              initialValue=""
+              errorMessage="enter a stronger password"
+              // actions
+              onInputChange={inputChangeHandler}
+            />
+            <AuthInput
+              id="confirm"
+              // validities
+              required
+              minLength={8}
+              // customizations
+              placeholder="confirm password"
+              secureTextEntry
+              autoCapitalize="none"
+              keyboardType="default"
+              initialValue=""
+              errorMessage="enter a stronger password"
+              // actions
+              onInputChange={inputChangeHandler}
+            />
             <View style={styles.tocContainer}>
               <CheckBox
-                value={isSelected}
+                value={formState.inputValues.toc}
                 disabled={false}
-                onValueChange={(value) => setIsSelected(value)}
+                onValueChange={(newValue) => {
+                  let validity = false;
+                  if (newValue) {
+                    validity = true;
+                  }
+                  inputChangeHandler('toc', newValue, validity);
+                }}
               />
               <Text style={styles.tocLabel}>
                 I've read and fully agree with the Terms and Conditions of
@@ -74,11 +231,16 @@ const RegisterScreen = (props) => {
             </View>
           </View>
           <View style={styles.group3}>
-            <StandardButton
-              style={styles.loginButton}
-              title1="Sign up"
-              onPress={registerHandler}
-            />
+            {isLoading ? (
+              <ActivityIndicator size="large" color={Colors.primary5} />
+            ) : (
+              <StandardButton
+                style={styles.loginButton}
+                title1="Sign up"
+                onPress={registerHandler}
+              />
+            )}
+
             <View style={styles.signInContent}>
               <Text style={styles.noAccountText}>Already have an account?</Text>
               <TouchableOpacity
