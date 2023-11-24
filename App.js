@@ -1,22 +1,25 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Text, View } from 'react-native';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-//import store from './store/store.js';
-
-import CustomFonts from './constants/Fonts.js';
+import * as authActions from './store/actions/auth.js';
+import * as appDataActions from './store/actions/appData.js';
 import AuthNavigator from './navigation/AuthNavigator.js';
 import UserNavigator from './navigation/UserNavigator.js';
 import AdminNavigator from './navigation/AdminNavigator.js';
+import CustomFonts from './constants/Fonts.js';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const navFlow = useSelector((state) => state.appData.navigationFlow);
+
+  const dispatch = useDispatch();
 
   // loading fonts
   useEffect(() => {
@@ -40,6 +43,38 @@ export default function App() {
     prepare();
   }, []);
 
+  let userData;
+
+  useEffect(() => {
+    const tryLogin = async () => {
+      try {
+        userData = await AsyncStorage.getItem('userData');
+      } catch (error) {
+        console.log(e.message);
+      }
+
+      if (userData) {
+        const transformedData = JSON.parse(userData);
+        const { userToken, userId, expiryDate } = transformedData;
+
+        const expirationDate = new Date(expiryDate);
+        if (expirationDate > new Date() && userToken && userId) {
+          // find the expiration time
+          const expirationTime =
+            expirationDate.getTime() - new Date().getTime();
+
+          // log the user in
+          dispatch(authActions.authenticate(userId, userToken, expirationTime));
+
+          // check if the user is regular or admin TBD
+          // set the app flow
+          dispatch(appDataActions.setNavigationFlow('user'));
+        }
+      }
+    };
+    tryLogin();
+  }, [dispatch]);
+
   // Show/Hide the loading screen
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -62,14 +97,6 @@ export default function App() {
       ) : (
         <AdminNavigator />
       )}
-      {/* use the Auth navigation stack at first use */}
-      {/* <AuthNavigator /> */}
-
-      {/* if the logged account is a regular user use the RegularNavigator */}
-      {/* <UserNavigator /> */}
-
-      {/* if the logged account is an admin user, use the AdminNavigator */}
-      {/* <AdminNavigator /> */}
     </View>
   );
 }
