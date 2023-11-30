@@ -38,7 +38,7 @@ const HomeHeader = (props) => {
           </View>
         </TouchableComponent>
         <Text style={{ ...commonStyles.text, ...styles.welcomeText }}>
-          Welcome, John M. Smithsenn
+          Welcome, John M. Smithsennn
         </Text>
       </View>
     </View>

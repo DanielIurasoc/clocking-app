@@ -15,7 +15,7 @@ class Time {
         ? '0' + this.minutes.toString()
         : this.minutes.toString();
 
-    return hh + ':' + mm;
+    return ' ' + hh + ' : ' + mm + ' ';
   }
 }
 

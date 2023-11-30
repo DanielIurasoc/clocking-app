@@ -5,6 +5,7 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { initializeApp } from '@react-native-firebase/app';
 
 import * as authActions from './store/actions/auth.js';
 import * as appDataActions from './store/actions/appData.js';
@@ -14,6 +15,22 @@ import AdminNavigator from './navigation/AdminNavigator.js';
 import CustomFonts from './constants/Fonts.js';
 
 SplashScreen.preventAutoHideAsync();
+
+// firebase config data
+// const firebaseConfig = {
+//   apiKey: 'AIzaSyBby14_axMzqWaY9BCTuBbpkA5aMO4WJH0',
+//   authDomain: 'clocko-2023.firebaseapp.com',
+//   databaseURL:
+//     'https://clocko-2023-default-rtdb.europe-west1.firebasedatabase.app',
+//   projectId: 'clocko-2023',
+//   storageBucket: 'clocko-2023.appspot.com',
+//   messagingSenderId: '6428998357',
+//   appId: '1:6428998357:web:da1c0aaa308cdb636a005c',
+//   measurementId: 'G-5B04B00XDN',
+// };
+
+// // initialize the firebase app
+// initializeApp(firebaseConfig);
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
