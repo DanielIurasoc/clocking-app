@@ -1,5 +1,5 @@
-import React, { useState, useReducer, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useReducer, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker';
@@ -17,6 +17,7 @@ import HomeButton from '../../components/UI/HomeButton.js';
 
 // reducer logic here
 const UPDATE_DATA = 'UPDATE_DATA';
+const CLEAR_DATA = 'CLEAR_DATA';
 
 const dataReducer = (state, action) => {
   switch (action.type) {
@@ -24,6 +25,16 @@ const dataReducer = (state, action) => {
       return {
         ...state,
         [action.input]: action.value,
+      };
+    case CLEAR_DATA:
+      return {
+        ...state,
+        locationId: '',
+        date: ' - ',
+        startTime: ' - ',
+        endTime: ' - ',
+        pauseTime: ' 00 : 00 ',
+        dataIsValid: false,
       };
     default:
       return state;
@@ -38,15 +49,14 @@ const HomeScreen = (props) => {
 
   // reducer define here
   const [dataInput, dispatchDataInput] = useReducer(dataReducer, {
-    location: '',
-    locationOpen: false,
-    date: ' - ',
+    locationId: useSelector((state) => state.appData.locationId),
+    date: useSelector((state) => state.appData.date),
     dateOpen: false,
-    startTime: ' - ',
+    startTime: useSelector((state) => state.appData.startTime),
     startTimeOpen: false,
-    endTime: ' - ',
+    endTime: useSelector((state) => state.appData.endTime),
     endTimeOpen: false,
-    pauseTime: ' 00 : 00 ',
+    pauseTime: useSelector((state) => state.appData.pauseTime),
     pauseTimeOpen: false,
     dataIsValid: false,
   });
@@ -59,7 +69,6 @@ const HomeScreen = (props) => {
     pause,
     date
   ) => {
-    console.log('entered');
     const locationName = 'Bucharest, 15 Main Street';
     const title = locationName + ', ' + date;
 
@@ -98,8 +107,11 @@ const HomeScreen = (props) => {
         input: inputIdentifier,
         value: inputValue,
       });
+
+      // save to redux store
+      dispatch(appDataActions.setClockingData(inputIdentifier, inputValue));
     },
-    [dispatchDataInput]
+    [dispatchDataInput, dispatch]
   );
 
   return (
@@ -111,7 +123,9 @@ const HomeScreen = (props) => {
           iconName={'qrcode-scan'}
           labelText={'Scan location (QR Code):'}
           chosenText={'Bucharest, 15 Main Street'}
-          onButtonPress={() => {}}
+          onButtonPress={() => {
+            props.navigation.navigate('Scanner');
+          }}
           style={{ marginTop: 10 }}
         />
 
@@ -138,6 +152,7 @@ const HomeScreen = (props) => {
           onConfirm={(date) => {
             dataInputHandler('dateOpen', false);
             dataInputHandler('date', date);
+            //dispatch(appDataActions.setClockingData('date', date));
           }}
           onCancel={() => {
             dataInputHandler('dateOpen', false);
@@ -175,6 +190,7 @@ const HomeScreen = (props) => {
           onConfirm={(date) => {
             dataInputHandler('startTimeOpen', false);
             dataInputHandler('startTime', date);
+            // dispatch(appDataActions.setClockingData('startTime', date));
           }}
           onCancel={() => {
             dataInputHandler('startTimeOpen', false);
@@ -210,12 +226,7 @@ const HomeScreen = (props) => {
           onConfirm={(date) => {
             dataInputHandler('endTimeOpen', false);
             dataInputHandler('endTime', date);
-            // console.log(
-            //   ' ' +
-            //     dataInput.endTime.getHours().toString().padStart(2, '0') +
-            //     ' : ' +
-            //     dataInput.endTime.getMinutes().toString().padStart(2, '0')
-            // );
+            // dispatch(appDataActions.setClockingData('endTime', date));
           }}
           onCancel={() => {
             dataInputHandler('endTimeOpen', false);
@@ -255,6 +266,7 @@ const HomeScreen = (props) => {
           onConfirm={(date) => {
             dataInputHandler('pauseTimeOpen', false);
             dataInputHandler('pauseTime', date);
+            // dispatch(appDataActions.setClockingData('pauseTime', date));
           }}
           onCancel={() => {
             dataInputHandler('pauseTimeOpen', false);
@@ -274,6 +286,8 @@ const HomeScreen = (props) => {
               new Date()
             );*/
             console.log(dataInput);
+            dispatch(appDataActions.clearClockingData());
+            dispatchDataInput({ type: CLEAR_DATA });
           }}
         >
           <Text style={{ ...commonStyles.text, ...styles.mainButtonText }}>
