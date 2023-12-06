@@ -39,7 +39,13 @@
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/perf",
-      "@react-native-firebase/crashlytics"
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow ${PRODUCT_NAME} to access camera."
+        }
+      ]
     ]
   }
 }

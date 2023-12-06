@@ -14,15 +14,18 @@ import ClockingsScreen from '../screens/common/ClockingsScreen.js';
 import DetailsScreen from '../screens/common/DetailsScreen.js';
 import StatisticsScreen from '../screens/common/StatisticsScreen.js';
 import AccountScreen from '../screens/common/AccountScreen.js';
+import ScannerScreen from '../screens/user/ScannerScreen.js';
 
-//import CustomDrawer from '../components/CustomDrawer.js';
 import CustomDrawer from '../components/Navigation/CustomDrawer.js';
 
 // create the drawer navigator
 const myDrawer = createDrawerNavigator();
 
-// create the stack navigator
-const myStack = createStackNavigator();
+// create the stack navigator for Home / Scanner
+const myHomeStack = createStackNavigator();
+
+// create the stack navigator for Clockings / Details
+const myClockingsStack = createStackNavigator();
 
 // create the bottom navbar
 const myBottomTab = createBottomTabNavigator();
@@ -54,28 +57,53 @@ function DrawerNavigator() {
   );
 }
 
+function HomeStackNavigator(props) {
+  return (
+    <myHomeStack.Navigator
+      initialRouteName="HomeScreen"
+      screenOptions={{}}
+      backBehaviour="history"
+    >
+      <myHomeStack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <myHomeStack.Screen
+        name="Scanner"
+        component={ScannerScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+    </myHomeStack.Navigator>
+  );
+}
+
 function ClockingsStackNavigator(props) {
   return (
-    <myStack.Navigator
+    <myClockingsStack.Navigator
       initialRouteName="ClockingsScreen"
       screenOptions={{}}
       backBehaviour="history"
     >
-      <myStack.Screen
+      <myClockingsStack.Screen
         name="ClockingsScreen"
         component={ClockingsScreen}
         options={{
           headerShown: false,
         }}
       />
-      <myStack.Screen
+      <myClockingsStack.Screen
         name="Details"
         component={DetailsScreen}
         options={({ route }) => ({
           title: route.params?.title,
         })}
       />
-    </myStack.Navigator>
+    </myClockingsStack.Navigator>
   );
 }
 
@@ -97,7 +125,7 @@ function BottomTabsNavigator() {
     >
       <myBottomTab.Screen
         name={'Home'}
-        component={HomeScreen}
+        component={HomeStackNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcon name="home" size={40} color={color} />
