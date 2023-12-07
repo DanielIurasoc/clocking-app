@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Alert,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useDispatch } from 'react-redux';
+import database from '@react-native-firebase/database';
 
 import Colors from '../../constants/Colors.js';
 
@@ -19,6 +20,16 @@ import QRMask from '../../Resources/SVGs/QR_Mask.svg';
 
 const ScannerScreen = (props) => {
   const [scanned, setScanned] = useState(false);
+  const [scannedData, setScannedData] = useState({
+    name: undefined,
+    address: undefined,
+    valid: false,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  //const [alertShown, setAlertShown] = useState(false);
+  let alertShown = useRef(false);
+  const [locationName, setLocationName] = useState('');
+  const [locationAddress, setLocationAddress] = useState('');
 
   const dispatch = useDispatch();
 
@@ -71,30 +82,86 @@ const ScannerScreen = (props) => {
     getPermissions();
   }, []);
 
-  const handleBarcodeScanned = ({ type, data }) => {
-    setScanned(true);
-
-    const locationName = 'Location name from Firebase';
-
-    Alert.alert('You scanned', `Location : ${locationName}`, [
-      {
-        text: 'Confirm',
-        onPress: () => {
-          // save the scanned location
-          // go back to home screen
-          props.navigation.goBack();
+  useEffect(() => {
+    if (scannedData && scannedData.valid) {
+      Alert.alert(`Scanned ${locationName}`, `Located at ${locationAddress}`, [
+        {
+          text: 'Scan again',
+          onPress: () => {
+            setScanned(false);
+            alertShown.current = false;
+            setScannedData(null);
+          },
         },
-      },
-      {
-        text: 'Scan again',
-        onPress: () => {
-          setScanned(false);
-        },
-      },
-    ]);
+        {
+          text: 'Confirm',
+          onPress: () => {
+            // save the scanned location
+            dispatch(appDataActions.setClockingData('locationId', data));
 
-    // store the location id in redux
-    dispatch(appDataActions.setClockingData('locationId', data));
+            // go back to home screen
+            props.navigation.goBack();
+          },
+        },
+      ]);
+    } else if (!alertShown.current && scanned) {
+      Alert.alert('Location Not Found', 'Invalid QR Code', [
+        {
+          text: 'Go back',
+          onPress: () => {
+            // go back to home screen
+            props.navigation.goBack();
+          },
+        },
+        {
+          text: 'Try again',
+          onPress: () => {
+            setScanned(false);
+            alertShown.current = false;
+          },
+        },
+      ]);
+      alertShown.current = true;
+    }
+  }, [scannedData]);
+
+  const handleBarcodeScanned = async ({ data }) => {
+    try {
+      setIsLoading(true);
+
+      // get location name from firebase
+      const snapshot = await database()
+        .ref(`/locations/${data}/`)
+        .once('value');
+
+      const locationData = snapshot.val();
+
+      if (locationData && !alertShown.current) {
+        setLocationName(locationData.name);
+        setLocationAddress(locationData.address);
+
+        setScannedData({
+          name: locationName.name,
+          address: locationData.address,
+          valid: true,
+        });
+
+        alertShown.current = true;
+      } else if (!alertShown.current) {
+        setScannedData({
+          name: undefined,
+          address: undefined,
+          valid: false,
+        });
+      }
+      setScanned(true);
+    } catch (error) {
+      console.error('Error fetching location data:', error.message);
+      Alert.alert('Error', 'An error occurred while fetching location data.');
+      setScanned(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

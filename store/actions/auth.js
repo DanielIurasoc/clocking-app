@@ -150,6 +150,7 @@ const setLogoutTimer = (expirationTime) => {
   return (dispatch) => {
     timer = setTimeout(() => {
       dispatch(appDataActions.setNavigationFlow('auth'));
+      dispatch(appDataActions.clearClockingData());
       dispatch(logout());
     }, expirationTime);
   };
