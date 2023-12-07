@@ -1,4 +1,4 @@
-import React, { useReducer, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,78 +15,45 @@ import CustomText from '../../components/CustomText.js';
 import HomeHeader from '../../components/UI/HomeHeader.js';
 import HomeButton from '../../components/UI/HomeButton.js';
 
-// reducer logic here
-const UPDATE_DATA = 'UPDATE_DATA';
-const CLEAR_DATA = 'CLEAR_DATA';
-
-const dataReducer = (state, action) => {
-  switch (action.type) {
-    case UPDATE_DATA:
-      return {
-        ...state,
-        [action.input]: action.value,
-      };
-    case CLEAR_DATA:
-      return {
-        ...state,
-        locationId: '',
-        date: ' - ',
-        startTime: ' - ',
-        endTime: ' - ',
-        pauseTime: ' 00 : 00 ',
-        dataIsValid: false,
-      };
-    default:
-      return state;
-  }
-};
-
 const HomeScreen = (props) => {
+  const [locationName, setLocationName] = useState(' - ');
+  const [date, setDate] = useState(useSelector((state) => state.appData.date));
+  const [dateOpen, setDateOpen] = useState(false);
+  const [startTime, setStartTime] = useState(
+    useSelector((state) => state.appData.startTime)
+  );
+  const [startOpen, setStartOpen] = useState(false);
+  const [endTime, setEndTime] = useState(
+    useSelector((state) => state.appData.endTime)
+  );
+  const [endOpen, setEndOpen] = useState(false);
+  const [pauseTime, setPauseTime] = useState(
+    useSelector((state) => state.appData.pauseTime)
+  );
+  const [pauseOpen, setPauseOpen] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+
   const userId = useSelector((state) => state.auth.userId);
+  const locationId = useSelector((state) => state.appData.locationId);
   const dispatch = useDispatch();
 
-  const reference = database().ref(`/users/${userId}/`);
+  const reference = database().ref(`/clockings/${userId}/`);
 
-  // reducer define here
-  const [dataInput, dispatchDataInput] = useReducer(dataReducer, {
-    locationId: useSelector((state) => state.appData.locationId),
-    date: useSelector((state) => state.appData.date),
-    dateOpen: false,
-    startTime: useSelector((state) => state.appData.startTime),
-    startTimeOpen: false,
-    endTime: useSelector((state) => state.appData.endTime),
-    endTimeOpen: false,
-    pauseTime: useSelector((state) => state.appData.pauseTime),
-    pauseTimeOpen: false,
-    dataIsValid: false,
-  });
-
-  const writeDataToDatabase = (
-    locationId,
-    description,
-    startTime,
-    endTime,
-    pause,
-    date
-  ) => {
-    const locationName = 'Bucharest, 15 Main Street';
+  const writeDataToDatabase = (description) => {
+    // create the title for this specific clocking
     const title = locationName + ', ' + date;
 
     // write data
-    reference
-      .push()
-      .set({
-        clockingId: 'asdadawsa',
-        ownerId: userId,
-        locationId,
-        title,
-        description,
-        startTime,
-        endTime,
-        pause,
-        date,
-      })
-      .then(() => console.log('done'));
+    reference.push({
+      ownerId: userId,
+      locationId,
+      title,
+      description,
+      startTime: startTime.toString(),
+      endTime: endTime.toString(),
+      pauseTime: pauseTime.toString(),
+      date: date.toString(),
+    });
   };
 
   // set active screen
@@ -96,23 +63,26 @@ const HomeScreen = (props) => {
     }, [dispatch])
   );
 
+  if (locationId !== '' && locationName === ' - ') {
+    database()
+      .ref(`/locations/${locationId}/`)
+      .once('value')
+      .then((snapshot) => {
+        setLocationName(snapshot.val().name);
+      });
+  }
+
   const onDrawerButtonPress = () => {
     props.navigation.openDrawer();
   };
 
-  const dataInputHandler = useCallback(
-    (inputIdentifier, inputValue) => {
-      dispatchDataInput({
-        type: UPDATE_DATA,
-        input: inputIdentifier,
-        value: inputValue,
-      });
-
-      // save to redux store
-      dispatch(appDataActions.setClockingData(inputIdentifier, inputValue));
-    },
-    [dispatchDataInput, dispatch]
-  );
+  const clearData = () => {
+    setLocationName(' - ');
+    setDate(' - ');
+    setStartTime(' - ');
+    setEndTime(' - ');
+    setPauseTime(' 00 : 00 ');
+  };
 
   return (
     <View style={styles.container}>
@@ -122,7 +92,7 @@ const HomeScreen = (props) => {
         <HomeButton
           iconName={'qrcode-scan'}
           labelText={'Scan location (QR Code):'}
-          chosenText={'Bucharest, 15 Main Street'}
+          chosenText={locationName}
           onButtonPress={() => {
             props.navigation.navigate('Scanner');
           }}
@@ -133,13 +103,9 @@ const HomeScreen = (props) => {
         <HomeButton
           iconName={'calendar-clock-outline'}
           labelText={'Select the date:'}
-          chosenText={
-            dataInput.date !== ' - '
-              ? dataInput.date.toLocaleDateString('ro-RO')
-              : dataInput.date
-          }
+          chosenText={date !== ' - ' ? date.toLocaleDateString('ro-RO') : date}
           onButtonPress={() => {
-            dataInputHandler('dateOpen', true);
+            setDateOpen(true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -147,15 +113,15 @@ const HomeScreen = (props) => {
           modal
           mode="date"
           maximumDate={new Date()}
-          open={dataInput.dateOpen}
-          date={dataInput.date === ' - ' ? new Date() : dataInput.date}
+          open={dateOpen}
+          date={date === ' - ' ? new Date() : date}
           onConfirm={(date) => {
-            dataInputHandler('dateOpen', false);
-            dataInputHandler('date', date);
-            //dispatch(appDataActions.setClockingData('date', date));
+            setDateOpen(false);
+            setDate(date);
+            dispatch(appDataActions.setClockingData('date', date));
           }}
           onCancel={() => {
-            dataInputHandler('dateOpen', false);
+            setDateOpen(false);
           }}
         />
 
@@ -164,15 +130,15 @@ const HomeScreen = (props) => {
           iconName={'clock-edit-outline'}
           labelText={'Pick the start time:'}
           chosenText={
-            dataInput.startTime === ' - '
-              ? dataInput.startTime
+            startTime === ' - '
+              ? startTime
               : ' ' +
-                dataInput.startTime.getHours().toString().padStart(2, '0') +
+                startTime.getHours().toString().padStart(2, '0') +
                 ' : ' +
-                dataInput.startTime.getMinutes().toString().padStart(2, '0')
+                startTime.getMinutes().toString().padStart(2, '0')
           }
           onButtonPress={() => {
-            dataInputHandler('startTimeOpen', true);
+            setStartOpen(true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -183,17 +149,15 @@ const HomeScreen = (props) => {
           is24hourSource="locale"
           minuteInterval={5}
           title="Select the start time"
-          open={dataInput.startTimeOpen}
-          date={
-            dataInput.startTime === ' - ' ? new Date() : dataInput.startTime
-          }
+          open={startOpen}
+          date={startTime === ' - ' ? new Date() : startTime}
           onConfirm={(date) => {
-            dataInputHandler('startTimeOpen', false);
-            dataInputHandler('startTime', date);
-            // dispatch(appDataActions.setClockingData('startTime', date));
+            setStartOpen(false);
+            setStartTime(date);
+            dispatch(appDataActions.setClockingData('startTime', date));
           }}
           onCancel={() => {
-            dataInputHandler('startTimeOpen', false);
+            setStartOpen(false);
           }}
         />
 
@@ -202,15 +166,15 @@ const HomeScreen = (props) => {
           iconName={'clock-check-outline'}
           labelText={'Pick the end time:'}
           chosenText={
-            dataInput.endTime === ' - '
-              ? dataInput.endTime
+            endTime === ' - '
+              ? endTime
               : ' ' +
-                dataInput.endTime.getHours().toString().padStart(2, '0') +
+                endTime.getHours().toString().padStart(2, '0') +
                 ' : ' +
-                dataInput.endTime.getMinutes().toString().padStart(2, '0')
+                endTime.getMinutes().toString().padStart(2, '0')
           }
           onButtonPress={() => {
-            dataInputHandler('endTimeOpen', true);
+            setEndOpen(true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -221,15 +185,15 @@ const HomeScreen = (props) => {
           is24hourSource="locale"
           minuteInterval={5}
           title="Select the finish time"
-          open={dataInput.endTimeOpen}
-          date={dataInput.endTime === ' - ' ? new Date() : dataInput.endTime}
+          open={endOpen}
+          date={endTime === ' - ' ? new Date() : endTime}
           onConfirm={(date) => {
-            dataInputHandler('endTimeOpen', false);
-            dataInputHandler('endTime', date);
-            // dispatch(appDataActions.setClockingData('endTime', date));
+            setEndOpen(false);
+            setEndTime(date);
+            dispatch(appDataActions.setClockingData('endTime', date));
           }}
           onCancel={() => {
-            dataInputHandler('endTimeOpen', false);
+            setEndOpen(false);
           }}
         />
 
@@ -238,15 +202,12 @@ const HomeScreen = (props) => {
           iconName={'clock-check-outline'}
           labelText={'Enter the pause duration:'}
           chosenText={
-            dataInput.pauseTime === ' 00 : 00 '
-              ? dataInput.pauseTime
-              : new Time(
-                  dataInput.pauseTime.getHours(),
-                  dataInput.pauseTime.getMinutes()
-                ).getTime()
+            pauseTime === ' 00 : 00 '
+              ? pauseTime
+              : new Time(pauseTime.getHours(), pauseTime.getMinutes()).getTime()
           }
           onButtonPress={() => {
-            dataInputHandler('pauseTimeOpen', true);
+            setPauseOpen(true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -257,19 +218,19 @@ const HomeScreen = (props) => {
           is24hourSource="locale"
           minuteInterval={5}
           title="Select the pause duration"
-          open={dataInput.pauseTimeOpen}
+          open={pauseOpen}
           date={
-            dataInput.pauseTime === ' 00 : 00 '
+            pauseTime === ' 00 : 00 '
               ? new Date(new Date().setHours(0, 0, 0, 0))
-              : dataInput.pauseTime
+              : pauseTime
           }
           onConfirm={(date) => {
-            dataInputHandler('pauseTimeOpen', false);
-            dataInputHandler('pauseTime', date);
-            // dispatch(appDataActions.setClockingData('pauseTime', date));
+            setPauseOpen(false);
+            setPauseTime(date);
+            dispatch(appDataActions.setClockingData('pauseTime', date));
           }}
           onCancel={() => {
-            dataInputHandler('pauseTimeOpen', false);
+            setPauseOpen(false);
           }}
         />
 
@@ -277,17 +238,13 @@ const HomeScreen = (props) => {
         <TouchableOpacity
           style={styles.mainButton}
           onPress={() => {
-            /*writeDataToDatabase(
-              'asdasdas',
-              'Did good work. Expect big pay',
-              '08:00',
-              '17:30',
-              30,
-              new Date()
-            );*/
-            console.log(dataInput);
+            writeDataToDatabase('Did good work. Expect big pay');
+
+            // update redux store
             dispatch(appDataActions.clearClockingData());
-            dispatchDataInput({ type: CLEAR_DATA });
+
+            // update the local reducer
+            clearData();
           }}
         >
           <Text style={{ ...commonStyles.text, ...styles.mainButtonText }}>
