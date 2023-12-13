@@ -1,5 +1,12 @@
 import React, { useReducer, useEffect, useCallback, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker';
@@ -16,29 +23,83 @@ import HomeHeader from '../../components/UI/HomeHeader.js';
 import HomeButton from '../../components/UI/HomeButton.js';
 
 const HomeScreen = (props) => {
-  const [locationName, setLocationName] = useState(' - ');
-  const [date, setDate] = useState(useSelector((state) => state.appData.date));
-  const [dateOpen, setDateOpen] = useState(false);
-  const [startTime, setStartTime] = useState(
-    useSelector((state) => state.appData.startTime)
-  );
-  const [startOpen, setStartOpen] = useState(false);
-  const [endTime, setEndTime] = useState(
-    useSelector((state) => state.appData.endTime)
-  );
-  const [endOpen, setEndOpen] = useState(false);
-  const [pauseTime, setPauseTime] = useState(
-    useSelector((state) => state.appData.pauseTime)
-  );
-  const [pauseOpen, setPauseOpen] = useState(false);
-  const [isValid, setIsValid] = useState(false);
-
+  // APP DATA
   const userId = useSelector((state) => state.auth.userId);
   const locationId = useSelector((state) => state.appData.locationId);
-  const dispatch = useDispatch();
 
+  // HOME SCREEN DATA
+  const dispatch = useDispatch();
   const reference = database().ref(`/clockings/${userId}/`);
 
+  // FORM DATA
+  const [formState, setFormState] = useState({
+    locationName: ' - ',
+    date: useSelector((state) => state.appData.date),
+    dateOpen: false,
+    startTime: useSelector((state) => state.appData.startTime),
+    startOpen: false,
+    endTime: useSelector((state) => state.appData.endTime),
+    endOpen: false,
+    pauseTime: useSelector((state) => state.appData.pauseTime),
+    pauseOpen: false,
+    isValid: false,
+  });
+
+  const {
+    locationName,
+    date,
+    dateOpen,
+    startTime,
+    startOpen,
+    endTime,
+    endOpen,
+    pauseTime,
+    pauseOpen,
+    isValid,
+  } = formState;
+
+  // set active screen
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(appDataActions.setActiveScreen('Home'));
+    }, [dispatch])
+  );
+
+  // make sure to display the botton navigator on component mount
+  useEffect(() => {
+    // hide and disable the bottom navigation for the child screen
+    props.navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        // display: 'none',
+        backgroundColor: Colors.primary5,
+        height: 70,
+        display: 'flex',
+      },
+    });
+  }, []);
+
+  // drawer open handler
+  const onDrawerButtonPress = () => {
+    props.navigation.openDrawer();
+  };
+
+  // grab location data from database if the location id is set
+  if (locationId !== '' && locationName === ' - ') {
+    database()
+      .ref(`/locations/${locationId}/`)
+      .once('value')
+      .then((snapshot) => {
+        // setLocationName(snapshot.val().name);
+        if (snapshot.val()) {
+          updateDataField('locationName', snapshot.val().name);
+        }
+      })
+      .catch((error) => {
+        console.error('Error reading location data: ', error);
+      });
+  }
+
+  // write to Firebase method
   const writeDataToDatabase = (description) => {
     // create the title for this specific clocking
     const title = locationName + ', ' + date;
@@ -56,33 +117,28 @@ const HomeScreen = (props) => {
     });
   };
 
-  // set active screen
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(appDataActions.setActiveScreen('Home'));
-    }, [dispatch])
-  );
-
-  if (locationId !== '' && locationName === ' - ') {
-    database()
-      .ref(`/locations/${locationId}/`)
-      .once('value')
-      .then((snapshot) => {
-        setLocationName(snapshot.val().name);
-      });
-  }
-
-  const onDrawerButtonPress = () => {
-    props.navigation.openDrawer();
+  // method to update a specific field in the form state
+  const updateDataField = (identifier, value) => {
+    setFormState((prevFormState) => ({
+      ...prevFormState,
+      [identifier]: value,
+    }));
   };
 
+  // clear the form data on submit
   const clearData = () => {
-    setLocationName(' - ');
-    setDate(' - ');
-    setStartTime(' - ');
-    setEndTime(' - ');
-    setPauseTime(' 00 : 00 ');
+    updateDataField('date', ' - ');
+    updateDataField('startTime', ' - ');
+    updateDataField('endTime', ' - ');
+    updateDataField('pauseTime', ' 00 : 00 ');
+    updateDataField('isValid', false);
   };
+
+  // if (isLoading) {
+  //   <View style={styles.mainContainer}>
+  //     <ActivityIndicator size="large" color={Colors.primary5} />
+  //   </View>;
+  // }
 
   return (
     <View style={styles.container}>
@@ -94,7 +150,8 @@ const HomeScreen = (props) => {
           labelText={'Scan location (QR Code):'}
           chosenText={locationName}
           onButtonPress={() => {
-            props.navigation.navigate('Scanner');
+            //props.navigation.navigate('Scanner');
+            props.navigation.replace('Scanner');
           }}
           style={{ marginTop: 10 }}
         />
@@ -105,7 +162,8 @@ const HomeScreen = (props) => {
           labelText={'Select the date:'}
           chosenText={date !== ' - ' ? date.toLocaleDateString('ro-RO') : date}
           onButtonPress={() => {
-            setDateOpen(true);
+            // setDateOpen(true);
+            updateDataField('dateOpen', true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -116,12 +174,15 @@ const HomeScreen = (props) => {
           open={dateOpen}
           date={date === ' - ' ? new Date() : date}
           onConfirm={(date) => {
-            setDateOpen(false);
-            setDate(date);
+            // setDateOpen(false);
+            updateDataField('dateOpen', false);
+            // setDate(date);
+            updateDataField('date', date);
             dispatch(appDataActions.setClockingData('date', date));
           }}
           onCancel={() => {
-            setDateOpen(false);
+            // setDateOpen(false);
+            updateDataField('dateOpen', false);
           }}
         />
 
@@ -138,7 +199,8 @@ const HomeScreen = (props) => {
                 startTime.getMinutes().toString().padStart(2, '0')
           }
           onButtonPress={() => {
-            setStartOpen(true);
+            // setStartOpen(true);
+            updateDataField('startOpen', true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -152,12 +214,15 @@ const HomeScreen = (props) => {
           open={startOpen}
           date={startTime === ' - ' ? new Date() : startTime}
           onConfirm={(date) => {
-            setStartOpen(false);
-            setStartTime(date);
+            // setStartOpen(false);
+            updateDataField('startOpen', false);
+            // setStartTime(date);
+            updateDataField('startTime', date);
             dispatch(appDataActions.setClockingData('startTime', date));
           }}
           onCancel={() => {
-            setStartOpen(false);
+            // setStartOpen(false);
+            updateDataField('startOpen', false);
           }}
         />
 
@@ -174,7 +239,8 @@ const HomeScreen = (props) => {
                 endTime.getMinutes().toString().padStart(2, '0')
           }
           onButtonPress={() => {
-            setEndOpen(true);
+            // setEndOpen(true);
+            updateDataField('endOpen', true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -188,12 +254,15 @@ const HomeScreen = (props) => {
           open={endOpen}
           date={endTime === ' - ' ? new Date() : endTime}
           onConfirm={(date) => {
-            setEndOpen(false);
-            setEndTime(date);
+            // setEndOpen(false);
+            updateDataField('endOpen', false);
+            // setEndTime(date);
+            updateDataField('endTime', date);
             dispatch(appDataActions.setClockingData('endTime', date));
           }}
           onCancel={() => {
-            setEndOpen(false);
+            // setEndOpen(false);
+            updateDataField('endOpen', false);
           }}
         />
 
@@ -207,7 +276,8 @@ const HomeScreen = (props) => {
               : new Time(pauseTime.getHours(), pauseTime.getMinutes()).getTime()
           }
           onButtonPress={() => {
-            setPauseOpen(true);
+            // setPauseOpen(true);
+            updateDataField('pauseOpen', true);
           }}
           style={{ marginTop: 10 }}
         />
@@ -225,12 +295,15 @@ const HomeScreen = (props) => {
               : pauseTime
           }
           onConfirm={(date) => {
-            setPauseOpen(false);
-            setPauseTime(date);
+            // setPauseOpen(false);
+            updateDataField('pauseOpen', false);
+            // setPauseTime(date);
+            updateDataField('pauseTime', date);
             dispatch(appDataActions.setClockingData('pauseTime', date));
           }}
           onCancel={() => {
-            setPauseOpen(false);
+            // setPauseOpen(false);
+            updateDataField('pauseOpen', false);
           }}
         />
 
@@ -238,7 +311,7 @@ const HomeScreen = (props) => {
         <TouchableOpacity
           style={styles.mainButton}
           onPress={() => {
-            writeDataToDatabase('Did good work. Expect big pay');
+            writeDataToDatabase('Did good work. Expect big pay!!!');
 
             // update redux store
             dispatch(appDataActions.clearClockingData());

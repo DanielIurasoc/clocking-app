@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   TouchableNativeFeedback,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useDispatch } from 'react-redux';
 import database from '@react-native-firebase/database';
@@ -38,6 +39,13 @@ const ScannerScreen = (props) => {
     TouchableComponent = TouchableNativeFeedback;
   }
 
+  // set active screen
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(appDataActions.setActiveScreen('Scanner'));
+    }, [dispatch])
+  );
+
   // disable and hide bottom navigation on this screen
   useEffect(() => {
     props.navigation.getParent()?.setOptions({
@@ -45,13 +53,25 @@ const ScannerScreen = (props) => {
         display: 'none',
       },
     });
+
+    // disable the drawer on this screen
+    props.navigation.getParent().getParent()?.setOptions({
+      swipeEdgeWidth: 0,
+    });
+
     return () => {
-      props.navigation.getParent()?.setOptions({
-        tabBarStyle: {
-          backgroundColor: Colors.primary5,
-          height: 70,
-          display: 'flex',
-        },
+      // reset the nav bat style
+      // props.navigation.getParent()?.setOptions({
+      //   tabBarStyle: {
+      //     backgroundColor: Colors.primary5,
+      //     height: 70,
+      //     display: 'flex',
+      //   },
+      // });
+
+      // reactivate the drawer too
+      props.navigation.getParent().getParent()?.setOptions({
+        swipeEdgeWidth: 25,
       });
     };
   }, []);
@@ -72,7 +92,8 @@ const ScannerScreen = (props) => {
           {
             text: 'Go back',
             onPress: () => {
-              props.navigation.goBack();
+              // props.navigation.goBack();
+              props.navigation.replace('HomeScreen');
             },
           },
         ]);
@@ -100,7 +121,8 @@ const ScannerScreen = (props) => {
             dispatch(appDataActions.setClockingData('locationId', data));
 
             // go back to home screen
-            props.navigation.goBack();
+            //props.navigation.goBack();
+            props.navigation.replace('HomeScreen');
           },
         },
       ]);
@@ -110,7 +132,8 @@ const ScannerScreen = (props) => {
           text: 'Go back',
           onPress: () => {
             // go back to home screen
-            props.navigation.goBack();
+            // props.navigation.goBack();
+            props.navigation.replace('HomeScreen');
           },
         },
         {
@@ -190,7 +213,8 @@ const ScannerScreen = (props) => {
         {/*  add CANCEL button here */}
         <TouchableComponent
           onPress={() => {
-            props.navigation.goBack();
+            // props.navigation.goBack();
+            props.navigation.replace('HomeScreen');
           }}
         >
           <View style={styles.cancelButtonContainer}>

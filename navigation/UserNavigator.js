@@ -17,6 +17,7 @@ import AccountScreen from '../screens/common/AccountScreen.js';
 import ScannerScreen from '../screens/user/ScannerScreen.js';
 
 import CustomDrawer from '../components/Navigation/CustomDrawer.js';
+import { useSelector } from 'react-redux';
 
 // create the drawer navigator
 const myDrawer = createDrawerNavigator();
@@ -47,6 +48,7 @@ function DrawerNavigator() {
           paddingBottom: 0,
           height: 25,
         },
+        //swipeEdgeWidth: 0,
       }}
     >
       <myDrawer.Screen
@@ -77,6 +79,16 @@ function HomeStackNavigator(props) {
         options={{
           headerShown: false,
         }}
+        // screenOptions={{
+        //   swipeEdgeWidth:
+        //     useSelector((state) => state.appData.activeScreen) === 'Scanner'
+        //       ? 0
+        //       : '20%',
+        //   // swipeEnabled:
+        //   //   useSelector((state) => state.appData.activeScreen) === 'Scanner'
+        //   //     ? false
+        //   //     : true,
+        // }}
       />
     </myHomeStack.Navigator>
   );
