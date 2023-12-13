@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import database from '@react-native-firebase/database';
+
 import * as appDataActions from './appData.js';
 
 export const SIGNUP = 'SIGNUP';
@@ -18,8 +20,6 @@ export const signup = (fullname, phone, email, password) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          //fullname,
-          //phone,
           email,
           password,
           returnSecureToken: true,
@@ -49,7 +49,10 @@ export const signup = (fullname, phone, email, password) => {
       throw new Error(message);
     }
 
-    //const responseData = await response.json();
+    const responseData = await response.json();
+
+    // add user to realtime database too
+    writeDataToDatabase(fullname, fullname, 'EmpID0001', email, phone);
 
     dispatch({
       type: SIGNUP,
@@ -169,4 +172,21 @@ const saveDataToStorage = async (userToken, userId, expirationDate) => {
   } catch (e) {
     console.log(e.message);
   }
+};
+
+const writeDataToDatabase = (firstName, lastName, employerId, email, phone) => {
+  // get reference to realtime database desired location for writing data
+  const reference = database().ref(`/users/`);
+
+  // write data
+  reference.push({
+    firstName,
+    lastName,
+    employerId,
+    email,
+    phone,
+    preferences: {
+      language: 'English',
+    },
+  });
 };
