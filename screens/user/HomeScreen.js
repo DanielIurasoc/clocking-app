@@ -1,12 +1,5 @@
 import React, { useReducer, useEffect, useCallback, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker';
@@ -102,7 +95,7 @@ const HomeScreen = (props) => {
   // write to Firebase method
   const writeDataToDatabase = (description) => {
     // create the title for this specific clocking
-    const title = locationName + ', ' + date;
+    const title = locationName + ', ' + date.toLocaleDateString('ro-RO');
 
     // write data
     reference.push({
@@ -127,18 +120,13 @@ const HomeScreen = (props) => {
 
   // clear the form data on submit
   const clearData = () => {
+    updateDataField('locationName', ' - ');
     updateDataField('date', ' - ');
     updateDataField('startTime', ' - ');
     updateDataField('endTime', ' - ');
     updateDataField('pauseTime', ' 00 : 00 ');
     updateDataField('isValid', false);
   };
-
-  // if (isLoading) {
-  //   <View style={styles.mainContainer}>
-  //     <ActivityIndicator size="large" color={Colors.primary5} />
-  //   </View>;
-  // }
 
   return (
     <View style={styles.container}>

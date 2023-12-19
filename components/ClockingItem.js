@@ -11,26 +11,24 @@ import commonStyles from './commonStyles.js';
 import Colors from '../constants/Colors.js';
 
 const ClockingItem = (props) => {
+  const { date, title, startTime, endTime } = props.clockingData;
+
   return (
     <View style={styles.entryCard}>
       <TouchableOpacity style={styles.button} onPress={props.onCardPress}>
         <Text style={styles.index}> #{props.index + 1} </Text>
         <View style={styles.content}>
-          <Text
+          {/* <Text
             style={{ ...commonStyles.text, ...styles.location }}
             numberOfLines={1}
           >
             {props.location}
-          </Text>
+          </Text> */}
           <Text
             style={{ ...commonStyles.text, ...styles.dateAndTime }}
             numberOfLines={1}
           >
-            {props.date.toLocaleDateString('ro-RO') +
-              ', ' +
-              props.startTime +
-              ' - ' +
-              props.endTime}
+            {title}
           </Text>
         </View>
       </TouchableOpacity>
