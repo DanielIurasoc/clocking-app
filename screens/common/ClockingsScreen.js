@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import database from '@react-native-firebase/database';
 
 import ClockingItem from '../../components/ClockingItem.js';
 import SortButton from '../../components/SortButton.js';
@@ -9,16 +10,62 @@ import SortButton from '../../components/SortButton.js';
 import commonStyles from '../../components/commonStyles.js';
 import CommonHeader from '../../components/UI/CommonHeader.js';
 import * as appDataActions from '../../store/actions/appData.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ClockingsScreen = (props) => {
   const dispatch = useDispatch();
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [clockings, setClockings] = useState(null);
+  const userId = useSelector((state) => state.auth.userId);
+
+  // set the active screen
   useFocusEffect(
     React.useCallback(() => {
       dispatch(appDataActions.setActiveScreen('Clockings'));
     }, [dispatch])
   );
 
-  const clockings = useSelector((state) => state.clockings.allClockings);
+  useEffect(() => {
+    fetchClockingsFromAsync();
+  }, []);
+
+  const writeToAsyncStorage = async (key, value) => {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+  };
+
+  const refreshData = async () => {
+    setIsRefreshing(true);
+    const clockingsReference = database().ref(`/clockings/${userId}/`);
+    console.log(userId);
+
+    clockingsReference.once('value').then((snapshot) => {
+      const convertedClockingsArray = Object.keys(snapshot.val()).map(
+        (clockingId) => ({
+          clockingId,
+          clockingData: snapshot.val()[clockingId],
+        })
+      );
+
+      writeToAsyncStorage('userClockings', convertedClockingsArray);
+      setClockings(convertedClockingsArray);
+      setIsRefreshing(false);
+    });
+  };
+
+  const fetchClockingsFromAsync = async () => {
+    // try from async storage
+    try {
+      const localData = await AsyncStorage.getItem('userClockings');
+
+      if (localData) {
+        //console.log(JSON.parse(localData));
+        setClockings(JSON.parse(localData));
+      }
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+    }
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -28,18 +75,17 @@ const ClockingsScreen = (props) => {
           <Text style={{ ...commonStyles.text, ...styles.title }}>
             All your entries to date
           </Text>
-          <SortButton onCardPress={() => {}} />
+          <SortButton onSortPress={() => {}} />
         </View>
         <FlatList
           data={clockings}
-          keyExtractor={(item) => item.id}
+          onRefresh={refreshData}
+          refreshing={isRefreshing}
+          keyExtractor={(item) => item.clockingId}
           renderItem={(itemData) => (
             <ClockingItem
               index={itemData.index}
-              location={itemData.item.locationId}
-              date={itemData.item.date}
-              startTime={itemData.item.startTime}
-              endTime={itemData.item.endTime}
+              clockingData={itemData.item.clockingData}
               onCardPress={() =>
                 props.navigation.navigate('Details', {
                   title: itemData.item.title,

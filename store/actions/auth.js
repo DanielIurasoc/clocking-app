@@ -52,7 +52,14 @@ export const signup = (fullname, phone, email, password) => {
     const responseData = await response.json();
 
     // add user to realtime database too
-    writeDataToDatabase(fullname, fullname, 'EmpID0001', email, phone);
+    writeDataToDatabase(
+      responseData.localId,
+      fullname,
+      fullname,
+      'EmpID0001',
+      email,
+      phone
+    );
 
     dispatch({
       type: SIGNUP,
@@ -174,12 +181,19 @@ const saveDataToStorage = async (userToken, userId, expirationDate) => {
   }
 };
 
-const writeDataToDatabase = (firstName, lastName, employerId, email, phone) => {
+const writeDataToDatabase = (
+  userId,
+  firstName,
+  lastName,
+  employerId,
+  email,
+  phone
+) => {
   // get reference to realtime database desired location for writing data
-  const reference = database().ref(`/users/`);
+  const reference = database().ref(`/users/${userId}`);
 
   // write data
-  reference.push({
+  reference.set({
     firstName,
     lastName,
     employerId,

@@ -29,6 +29,7 @@ const ScannerScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   //const [alertShown, setAlertShown] = useState(false);
   let alertShown = useRef(false);
+  const [locationId, setLocationId] = useState('');
   const [locationName, setLocationName] = useState('');
   const [locationAddress, setLocationAddress] = useState('');
 
@@ -118,7 +119,7 @@ const ScannerScreen = (props) => {
           text: 'Confirm',
           onPress: () => {
             // save the scanned location
-            dispatch(appDataActions.setClockingData('locationId', data));
+            dispatch(appDataActions.setClockingData('locationId', locationId));
 
             // go back to home screen
             //props.navigation.goBack();
@@ -160,6 +161,7 @@ const ScannerScreen = (props) => {
       const locationData = snapshot.val();
 
       if (locationData && !alertShown.current) {
+        setLocationId(data);
         setLocationName(locationData.name);
         setLocationAddress(locationData.address);
 

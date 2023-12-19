@@ -14,6 +14,7 @@ import DrawerNavButton from './DrawerNavButton.js';
 import commonStyles from '../commonStyles.js';
 
 import * as appDataActions from '../../store/actions/appData.js';
+import * as authActions from '../../store/actions/auth.js';
 
 import Colors from '../../constants/Colors.js';
 
@@ -22,6 +23,7 @@ const CustomDrawerNew = (props) => {
   const activeScreen = useSelector((state) => state.appData.activeScreen);
 
   const logoutHandler = () => {
+    dispatch(authActions.logout());
     dispatch(appDataActions.setNavigationFlow('auth'));
   };
 
