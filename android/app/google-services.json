@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "clocko_sender_id",
+    "firebase_url": "clocko_database_url",
+    "project_id": "clocko-2023",
+    "storage_bucket": "clocko_storage_bucket"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:clocko_sender_id:android:5f95a236a45218e36a005c",
+        "android_client_info": {
+          "package_name": "com.iurashock.clockingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSN2vDmU-RkDJNlpYvNC29xSPb26gLhac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

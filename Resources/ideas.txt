@@ -1,0 +1,3 @@
+- Support different businesses (chose when signing up to which one you belong)
+- Add different color palletes for each one.
+- Let the admin add new users in database, to prevent unwanted people joining.
