@@ -37,7 +37,6 @@ const ClockingsScreen = (props) => {
   const refreshData = async () => {
     setIsRefreshing(true);
     const clockingsReference = database().ref(`/clockings/${userId}/`);
-    console.log(userId);
 
     clockingsReference.once('value').then((snapshot) => {
       const convertedClockingsArray = Object.keys(snapshot.val()).map(

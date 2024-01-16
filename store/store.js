@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-//import ReduxThunk from 'redux-thunk';
+// import ReduxThunk from 'redux-thunk';
 
 import appDataReducer from './reducers/appData.js';
 import clockingsReducer from './reducers/clockings.js';

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 
 import * as appDataActions from './appData.js';
 
@@ -12,35 +13,46 @@ let timer;
 
 export const signup = (fullname, phone, email, password) => {
   return async (dispatch) => {
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+    let userCredentials = null;
+
+    try {
+      userCredentials = await auth().createUserWithEmailAndPassword(
+        email,
+        password
+      );
+
+      console.log('User created and logged in!');
+
+      if (userCredentials.user) {
+        // add user to realtime database too
+        writeDataToDatabase(
+          userCredentials.user.uid,
+          fullname,
+          fullname,
+          'EmpID0001',
           email,
-          password,
-          returnSecureToken: true,
-        }),
+          phone
+        );
+
+        dispatch({
+          type: SIGNUP,
+        });
       }
-    );
-
-    if (!response.ok) {
-      const errorResponseData = await response.json();
-
+    } catch (error) {
       let message;
 
-      switch (errorResponseData.error.message) {
-        case 'EMAIL-EXISTS':
+      switch (error.code) {
+        case 'auth/email-already-in-use':
           message = 'The entered email address is already used by an account';
           break;
-        case 'OPERATION_NOT_ALLOWED':
-          message = 'Signing in is temporarely disabled. Try again later';
+        case 'auth/invalid-email':
+          message = 'The entered email address is not valid';
           break;
-        case 'TOO_MANY_ATTEMPTS_TRY_LATER':
-          message = 'Too many attemts. Try again later';
+        case 'auth/operation-not-allowed':
+          message = 'The registration functionality is disabled temporarily';
+          break;
+        case 'auth/weak-password':
+          message = 'The entered password is not strong enough';
           break;
         default:
           message = 'Something went wrong!';
@@ -48,28 +60,13 @@ export const signup = (fullname, phone, email, password) => {
 
       throw new Error(message);
     }
-
-    const responseData = await response.json();
-
-    // add user to realtime database too
-    writeDataToDatabase(
-      responseData.localId,
-      fullname,
-      fullname,
-      'EmpID0001',
-      email,
-      phone
-    );
-
-    dispatch({
-      type: SIGNUP,
-    });
   };
 };
 
 export const authenticate = (userId, userToken, expiryTime) => {
   return (dispatch) => {
     dispatch(setLogoutTimer(expiryTime));
+
     dispatch({
       type: AUTHENTICATE,
       userId,
@@ -79,38 +76,48 @@ export const authenticate = (userId, userToken, expiryTime) => {
 };
 
 export const login = (email, password) => {
-  return async (dispatch) => {
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-          returnSecureToken: true,
-        }),
+  return async () => {
+    let userCredentials = null;
+
+    try {
+      userCredentials = await auth().signInWithEmailAndPassword(
+        email,
+        password
+      );
+
+      console.log('User signed in');
+
+      const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
+
+      if (userCredentials.user) {
+        saveDataToStorage(
+          userCredentials.user,
+          userCredentials.user.uid,
+          expirationDate
+        );
+
+        dispatch({
+          type: AUTHENTICATE,
+          userId: userCredentials.user.uid,
+          userToken: userCredentials.user,
+        });
       }
-    );
-
-    if (!response.ok) {
-      const errorResponseData = await response.json();
-
+    } catch (error) {
+      console.error(error);
       let message;
-      switch (errorResponseData.error.message) {
-        case 'INVALID_EMAIL':
+
+      switch (error.code) {
+        case 'auth/invalid-email':
           message = 'Incorrect email address entered';
           break;
-        case 'INVALID_LOGIN_CREDENTIALS':
-          message = 'Incorrect email or password entered';
+        case 'auth/user-not-found':
+          message = 'There is no account corresponding to this email';
           break;
-        case 'MISSING_PASSWORD':
-          message = 'Please enter a password';
+        case 'auth/invalid-credential':
+          message = 'Incorrect password or email entered';
           break;
-        case 'USER_DISABLED':
-          message = 'The account has been disabled';
+        case 'auth/user-disabled':
+          message = 'This account has been disabled';
           break;
         default:
           message = 'Something went wrong!';
@@ -118,32 +125,16 @@ export const login = (email, password) => {
 
       throw new Error(message);
     }
-
-    const responseData = await response.json();
-
-    dispatch(
-      authenticate(
-        responseData.localId,
-        responseData.idToken,
-        parseInt(responseData.expiresIn) * 1000
-      )
-    );
-
-    const expirationDate = new Date(
-      new Date().getTime() + parseInt(responseData.expiresIn) * 1000
-    );
-
-    saveDataToStorage(
-      responseData.idToken,
-      responseData.localId,
-      expirationDate
-    );
   };
 };
 
 export const logout = () => {
   clearLogoutTimer();
   AsyncStorage.removeItem('userData');
+
+  auth()
+    .signOut()
+    .then(() => console.log('User signed out'));
 
   return {
     type: LOGOUT,

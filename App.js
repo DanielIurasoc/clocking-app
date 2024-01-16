@@ -1,10 +1,11 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Text, View } from 'react-native';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import { ActivityIndicator, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 
 import * as authActions from './store/actions/auth.js';
 import * as appDataActions from './store/actions/appData.js';
@@ -12,11 +13,15 @@ import AuthNavigator from './navigation/AuthNavigator.js';
 import UserNavigator from './navigation/UserNavigator.js';
 import AdminNavigator from './navigation/AdminNavigator.js';
 import CustomFonts from './constants/Fonts.js';
+import Colors from './constants/Colors.js';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [user, setUser] = useState(null);
+
   const navFlow = useSelector((state) => state.appData.navigationFlow);
 
   const dispatch = useDispatch();
@@ -41,6 +46,23 @@ export default function App() {
 
     // call it
     prepare();
+  }, []);
+
+  // handler for user state changes
+  function onAuthStateChanged(user) {
+    //console.log(user);
+    setUser(user);
+
+    if (isLoading) {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+
+    // unsubscribe on unmount
+    return subscriber;
   }, []);
 
   let userData;
@@ -82,7 +104,16 @@ export default function App() {
     }
   }, [fontsLoaded]);
 
-  // fonst couldn't be loaded, error message shown instead of main app
+  if (!fontsLoaded || isLoading) {
+    return (
+      <View>
+        <Text> Loading. Please wait </Text>
+        <ActivityIndicator size="large" color={Colors.primary5} />
+      </View>
+    );
+  }
+
+  // fonts couldn't be loaded, error message shown instead of main app
   if (!fontsLoaded) {
     return <Text> Error occured while loading fonts! </Text>;
   }
