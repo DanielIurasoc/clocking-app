@@ -76,7 +76,7 @@ export const authenticate = (userId, userToken, expiryTime) => {
 };
 
 export const login = (email, password) => {
-  return async () => {
+  return async (dispatch) => {
     let userCredentials = null;
 
     try {
@@ -96,11 +96,18 @@ export const login = (email, password) => {
           expirationDate
         );
 
-        dispatch({
-          type: AUTHENTICATE,
-          userId: userCredentials.user.uid,
-          userToken: userCredentials.user,
-        });
+        // dispatch({
+        //   type: AUTHENTICATE,
+        //   userId: userCredentials.user.uid,
+        //   userToken: userCredentials.user,
+        // });
+        dispatch(
+          authenticate(
+            userCredentials.user.uid,
+            userCredentials.user,
+            expirationDate
+          )
+        );
       }
     } catch (error) {
       console.error(error);

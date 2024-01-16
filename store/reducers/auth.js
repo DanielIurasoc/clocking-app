@@ -10,7 +10,6 @@ export default (state = initialState, action) => {
     case SIGNUP:
       return state;
     case AUTHENTICATE:
-      console.log('sada');
       return {
         userId: action.userId,
         userToken: action.userToken,

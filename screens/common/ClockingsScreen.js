@@ -58,7 +58,7 @@ const ClockingsScreen = (props) => {
       const localData = await AsyncStorage.getItem('userClockings');
 
       if (localData) {
-        //console.log(JSON.parse(localData));
+        // console.log(JSON.parse(localData));
         setClockings(JSON.parse(localData));
       }
     } catch (error) {
@@ -68,7 +68,11 @@ const ClockingsScreen = (props) => {
 
   return (
     <View style={styles.mainContainer}>
-      <CommonHeader />
+      <CommonHeader
+        onButtonPress={() => {
+          props.navigation.openDrawer();
+        }}
+      />
       <View style={styles.contentContainer}>
         <View style={styles.titleContainer}>
           <Text style={{ ...commonStyles.text, ...styles.title }}>
@@ -85,12 +89,12 @@ const ClockingsScreen = (props) => {
             <ClockingItem
               index={itemData.index}
               clockingData={itemData.item.clockingData}
-              onCardPress={() =>
+              onCardPress={() => {
                 props.navigation.navigate('Details', {
-                  title: itemData.item.title,
-                  id: itemData.item.id,
-                })
-              }
+                  title: itemData.item.clockingData.title,
+                  id: itemData.item.clockingId,
+                });
+              }}
             />
           )}
         />

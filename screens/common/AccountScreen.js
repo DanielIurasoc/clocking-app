@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 import CustomText from '../../components/CustomText.js';
+import CommonHeader from '../../components/UI/CommonHeader.js';
 
 import * as appDataActions from '../../store/actions/appData.js';
 
@@ -17,6 +18,11 @@ const AccountScreen = (props) => {
 
   return (
     <View style={styles.container}>
+      <CommonHeader
+        onButtonPress={() => {
+          props.navigation.openDrawer();
+        }}
+      />
       <CustomText style={styles.text}>This is the Account Screen!</CustomText>
     </View>
   );
@@ -25,7 +31,7 @@ const AccountScreen = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
 
