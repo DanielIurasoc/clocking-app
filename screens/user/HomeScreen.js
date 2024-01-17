@@ -130,7 +130,10 @@ const HomeScreen = (props) => {
 
   return (
     <View style={styles.container}>
-      <HomeHeader onButtonPress={onDrawerButtonPress} />
+      <HomeHeader
+        onButtonPress={onDrawerButtonPress}
+        title="Welcome, John M. Smithsennn"
+      />
       <View style={styles.mainContainer}>
         <CustomText style={styles.mainHeader}>Work details below :</CustomText>
         <HomeButton

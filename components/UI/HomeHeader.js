@@ -37,9 +37,11 @@ const HomeHeader = (props) => {
             />
           </View>
         </TouchableComponent>
-        <Text style={{ ...commonStyles.text, ...styles.welcomeText }}>
-          Welcome, John M. Smithsennn
-        </Text>
+        {props.title && (
+          <Text style={{ ...commonStyles.text, ...styles.welcomeText }}>
+            {props.title}
+          </Text>
+        )}
       </View>
     </View>
   );

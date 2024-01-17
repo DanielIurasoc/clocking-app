@@ -87,6 +87,7 @@ export const login = (email, password) => {
 
       console.log('User signed in');
 
+      // set an expiration time in 1 hour
       const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
 
       if (userCredentials.user) {
@@ -96,15 +97,10 @@ export const login = (email, password) => {
           expirationDate
         );
 
-        // dispatch({
-        //   type: AUTHENTICATE,
-        //   userId: userCredentials.user.uid,
-        //   userToken: userCredentials.user,
-        // });
         dispatch(
           authenticate(
             userCredentials.user.uid,
-            userCredentials.user,
+            JSON.stringify(userCredentials.user),
             expirationDate
           )
         );
@@ -160,7 +156,7 @@ const setLogoutTimer = (expirationTime) => {
       dispatch(appDataActions.setNavigationFlow('auth'));
       dispatch(appDataActions.clearClockingData());
       dispatch(logout());
-    }, expirationTime);
+    }, new Date(expirationTime).getTime());
   };
 };
 

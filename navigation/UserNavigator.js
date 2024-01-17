@@ -133,6 +133,7 @@ function BottomTabsNavigator() {
         },
         tabBarInactiveTintColor: Colors.primary2,
         tabBarActiveTintColor: Colors.dark6,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <myBottomTab.Screen
