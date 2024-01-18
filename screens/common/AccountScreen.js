@@ -22,10 +22,11 @@ import HomeHeader from '../../components/UI/HomeHeader.js';
 import SettingsCard from '../../components/UI/SettingsCard.js';
 import SettingItemEdit from '../../components/UI/SettingItemEdit.js';
 import CustomButton from '../../components/UI/CustomButton.js';
+import CustomSwitch from '../../components/UI/CustomSwitch.js';
 
 const AccountScreen = (props) => {
   const [selected, setSelected] = useState('');
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [darkEnabled, setDarkEnabled] = useState(false);
   const [refreshing, setRefreshing] = useState();
   const [userData, setUserData] = useState({
     firstName: '-',
@@ -56,8 +57,8 @@ const AccountScreen = (props) => {
     fetchUserData();
   }, []);
 
-  const toggleSwitch = () => {
-    setIsEnabled((prevState) => !prevState);
+  const toggleDarkSwitch = () => {
+    setDarkEnabled((prevState) => !prevState);
   };
 
   // PULL DOWN TO REFRESH SCROLL VIEW
@@ -179,18 +180,19 @@ const AccountScreen = (props) => {
           </SettingsCard>
           <SettingsCard title="Preferences" iconName="tune">
             <View style={styles.preferenceContainer}>
-              <Text>Dark mode - toggle</Text>
-              <View style={styles.toggleContainer}>
-                <Text>Text1</Text>
-                <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={toggleSwitch}
-                  value={isEnabled}
-                />
-                <Text>Text2</Text>
-              </View>
+              <Text>Dark mode (On / Off) </Text>
+              <CustomSwitch
+                isEnabled={darkEnabled}
+                toggleSwitch={toggleDarkSwitch}
+                iconOn="weather-night" //"moon-waxing-crescent"
+                iconOff="white-balance-sunny"
+                iconColor={Colors.primary1}
+                colorOn={Colors.green5}
+                colorOff={Colors.accent5}
+                barColorOn={Colors.green3}
+                barColorOff={Colors.accent3}
+                size={22}
+              />
             </View>
             <Text>Sound - slider</Text>
             <View style={styles.preferenceContainer}>

@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 
-import CustomText from '../../components/CustomText.js';
 import CommonHeader from '../../components/UI/CommonHeader.js';
 
 import * as appDataActions from '../../store/actions/appData.js';
@@ -23,9 +22,9 @@ const StatisticsScreen = (props) => {
           props.navigation.openDrawer();
         }}
       />
-      <CustomText style={styles.text}>
-        This is the Statistics Screen!
-      </CustomText>
+      <View style={styles.mainContainer}>
+        <Text> Statistics here </Text>
+      </View>
     </View>
   );
 };
@@ -37,8 +36,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  text: {
-    fontSize: 20,
+  mainContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
