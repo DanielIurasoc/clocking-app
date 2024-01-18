@@ -13,7 +13,20 @@
           "package_name": "com.iurashock.clockingapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "clocko_sender_id-fth6lh78gigtqfo8hm5md6m0uba27uft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iurashock.clockingapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "clocko_sender_id-ps79i3sldehh15hrrou8lhnjbq07m8cc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDSN2vDmU-RkDJNlpYvNC29xSPb26gLhac"
@@ -21,7 +34,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "clocko_sender_id-ps79i3sldehh15hrrou8lhnjbq07m8cc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "clocko_sender_id-mt5f8tsgt7iffk61s3ibhfgvv5c8rb6j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.iurashock.clockingapp"
+              }
+            }
+          ]
         }
       }
     }

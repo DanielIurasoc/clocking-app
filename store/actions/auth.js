@@ -5,8 +5,10 @@ import auth from '@react-native-firebase/auth';
 import * as appDataActions from './appData.js';
 
 export const SIGNUP = 'SIGNUP';
-export const AUTHENTICATE = 'AUTHENTICATE';
+export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
+export const AUTHENTICATE = 'AUTHENTICATE';
+export const UPDATE_ID = 'UPDATE_ID';
 
 const KEY = 'clocko_api_key';
 let timer;
@@ -63,47 +65,27 @@ export const signup = (fullname, phone, email, password) => {
   };
 };
 
-export const authenticate = (userId, userToken, expiryTime) => {
-  return (dispatch) => {
-    dispatch(setLogoutTimer(expiryTime));
-
-    dispatch({
-      type: AUTHENTICATE,
-      userId,
-      userToken,
-    });
-  };
-};
-
-export const login = (email, password) => {
+export const authenticate = (userId, userToken) => {
+  //, expiryTime) => {
   return async (dispatch) => {
+    //dispatch(setLogoutTimer(expiryTime));
     let userCredentials = null;
 
     try {
-      userCredentials = await auth().signInWithEmailAndPassword(
-        email,
-        password
+      const credential = auth.EmailAuthProvider.credential(
+        'test@test.com',
+        'testtest'
+        //userToken
       );
+      console.log('Created Credential: ', credential);
+      userCredentials = await auth().signInWithCredential(credential);
 
-      console.log('User signed in');
-
-      // set an expiration time in 1 hour
-      const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
-
-      if (userCredentials.user) {
-        saveDataToStorage(
-          userCredentials.user,
-          userCredentials.user.uid,
-          expirationDate
-        );
-
-        dispatch(
-          authenticate(
-            userCredentials.user.uid,
-            JSON.stringify(userCredentials.user),
-            expirationDate
-          )
-        );
+      if (userCredentials) {
+        dispatch({
+          type: AUTHENTICATE,
+          userId,
+          userToken,
+        });
       }
     } catch (error) {
       console.error(error);
@@ -131,8 +113,72 @@ export const login = (email, password) => {
   };
 };
 
+export const login = (email, password) => {
+  return async (dispatch) => {
+    let userCredentials = null;
+
+    try {
+      userCredentials = await auth().signInWithEmailAndPassword(
+        email,
+        password
+      );
+
+      console.log('User signed in');
+
+      // set an expiration time in 1 hour
+      const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
+
+      if (userCredentials.user) {
+        const userToken = await userCredentials.user.getIdToken();
+
+        saveDataToStorage(
+          userCredentials.user.uid,
+          userToken
+          //expirationDate
+        );
+
+        dispatch({
+          type: LOGIN,
+          userId: userCredentials.user.uid,
+          userToken,
+          //expirationDate
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      let message;
+
+      switch (error.code) {
+        case 'auth/invalid-email':
+          message = 'Incorrect email address entered';
+          break;
+        case 'auth/user-not-found':
+          message = 'There is no account corresponding to this email';
+          break;
+        case 'auth/invalid-credential':
+          message = 'Incorrect password or email entered';
+          break;
+        case 'auth/user-disabled':
+          message = 'This account has been disabled';
+          break;
+        default:
+          message = 'Something went wrong!';
+      }
+
+      throw new Error(message);
+    }
+  };
+};
+
+export const updateId = (userId) => {
+  return {
+    type: UPDATE_ID,
+    userId,
+  };
+};
+
 export const logout = () => {
-  clearLogoutTimer();
+  //clearLogoutTimer();
   AsyncStorage.removeItem('userData');
 
   auth()
@@ -160,14 +206,15 @@ const setLogoutTimer = (expirationTime) => {
   };
 };
 
-const saveDataToStorage = async (userToken, userId, expirationDate) => {
+const saveDataToStorage = async (userId, userToken) => {
+  //, expirationDate) => {
   try {
     AsyncStorage.setItem(
-      'userData',
+      'userLoginData',
       JSON.stringify({
         userToken,
         userId,
-        expiryDate: expirationDate.toISOString(),
+        //expiryDate: expirationDate.toISOString(),
       })
     );
   } catch (e) {

@@ -5,10 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 
 import * as authActions from './store/actions/auth.js';
 import * as appDataActions from './store/actions/appData.js';
+
 import AuthNavigator from './navigation/AuthNavigator.js';
 import UserNavigator from './navigation/UserNavigator.js';
 import AdminNavigator from './navigation/AdminNavigator.js';
@@ -48,10 +50,65 @@ export default function App() {
     prepare();
   }, []);
 
+  // write given data to Async Storage in key-value pairs
+  const writeToAsyncStorage = async (key, value) => {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+  };
+
+  // clean the saved data from Async Storage
+  const cleanAsyncStorage = async () => {
+    // call the remove method
+    try {
+      await AsyncStorage.removeItem('userData');
+      await AsyncStorage.removeItem('clockingData');
+      await AsyncStorage.removeItem('locationsData');
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
+  const updateAsyncStorage = (uid) => {
+    // reference to the database slice the user needs
+    const userDataReference = database().ref(`/users/${uid}/`);
+    const clockingsReference = database().ref(`/clockings/${uid}/`);
+    const locationsReference = database().ref(`/locations/`);
+
+    userDataReference.once('value').then((snapshot) => {
+      writeToAsyncStorage('userData', snapshot.val());
+    });
+
+    clockingsReference.once('value').then((snapshot) => {
+      const convertedClockingsArray = Object.keys(snapshot.val()).map(
+        (clockingId) => ({
+          clockingId,
+          clockingData: snapshot.val()[clockingId],
+        })
+      );
+
+      writeToAsyncStorage('userClockings', convertedClockingsArray);
+    });
+
+    locationsReference.once('value').then((snapshot) => {
+      writeToAsyncStorage('locationsData', snapshot.val());
+    });
+  };
+
   // handler for user state changes
   function onAuthStateChanged(user) {
-    //console.log(user);
-    setUser(user);
+    if (user !== null) {
+      // store the user
+      setUser(user);
+      dispatch(authActions.updateId(user.uid));
+
+      // read and save the data to Async storage
+      updateAsyncStorage(user.uid);
+
+      // TBD // change app flow based on user type
+      dispatch(appDataActions.setNavigationFlow('user'));
+    } else {
+      // clean the storage from any leftover data
+      cleanAsyncStorage();
+    }
 
     if (isLoading) {
       setIsLoading(false);
@@ -66,36 +123,6 @@ export default function App() {
   }, []);
 
   let userData;
-
-  useEffect(() => {
-    const tryLogin = async () => {
-      try {
-        userData = await AsyncStorage.getItem('userData');
-      } catch (error) {
-        console.log(e.message);
-      }
-
-      if (userData) {
-        const transformedData = JSON.parse(userData);
-        const { userToken, userId, expiryDate } = transformedData;
-
-        const expirationDate = new Date(expiryDate);
-        if (expirationDate > new Date() && userToken && userId) {
-          // find the expiration time
-          const expirationTime =
-            expirationDate.getTime() - new Date().getTime();
-
-          // log the user in
-          dispatch(authActions.authenticate(userId, userToken, expirationTime));
-
-          // check if the user is regular or admin TBD
-          // set the app flow
-          dispatch(appDataActions.setNavigationFlow('user'));
-        }
-      }
-    };
-    tryLogin();
-  }, [dispatch]);
 
   // Show/Hide the loading screen
   const onLayoutRootView = useCallback(async () => {

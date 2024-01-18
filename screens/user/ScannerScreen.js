@@ -61,15 +61,6 @@ const ScannerScreen = (props) => {
     });
 
     return () => {
-      // reset the nav bat style
-      // props.navigation.getParent()?.setOptions({
-      //   tabBarStyle: {
-      //     backgroundColor: Colors.primary5,
-      //     height: 70,
-      //     display: 'flex',
-      //   },
-      // });
-
       // reactivate the drawer too
       props.navigation.getParent().getParent()?.setOptions({
         swipeEdgeWidth: 25,
@@ -122,7 +113,6 @@ const ScannerScreen = (props) => {
             dispatch(appDataActions.setClockingData('locationId', locationId));
 
             // go back to home screen
-            //props.navigation.goBack();
             props.navigation.replace('HomeScreen');
           },
         },
@@ -133,7 +123,6 @@ const ScannerScreen = (props) => {
           text: 'Go back',
           onPress: () => {
             // go back to home screen
-            // props.navigation.goBack();
             props.navigation.replace('HomeScreen');
           },
         },

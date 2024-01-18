@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
@@ -7,9 +7,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  RefreshControl,
+  Switch,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SelectList } from 'react-native-dropdown-select-list';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import database from '@react-native-firebase/database';
 
 import * as appDataActions from '../../store/actions/appData.js';
 
@@ -21,14 +25,15 @@ import CustomButton from '../../components/UI/CustomButton.js';
 
 const AccountScreen = (props) => {
   const [selected, setSelected] = useState('');
-
-  const dispatch = useDispatch();
-
-  useFocusEffect(
-    React.useCallback(() => {
-      dispatch(appDataActions.setActiveScreen('Account'));
-    }, [dispatch])
-  );
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [refreshing, setRefreshing] = useState();
+  const [userData, setUserData] = useState({
+    firstName: '-',
+    lastName: '-',
+    email: '-',
+    phone: '-',
+    preferences: {},
+  });
 
   const languageOptions = [
     { key: '1', value: 'English' },
@@ -38,12 +43,89 @@ const AccountScreen = (props) => {
     { key: '5', value: 'German' },
   ];
 
+  const userId = useSelector((state) => state.auth.userId);
+  const dispatch = useDispatch();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(appDataActions.setActiveScreen('Account'));
+    }, [dispatch])
+  );
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const toggleSwitch = () => {
+    setIsEnabled((prevState) => !prevState);
+  };
+
+  // PULL DOWN TO REFRESH SCROLL VIEW
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    updateUserData();
+
+    // simulate a short delay if wanted
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
+  // FETCHING AND UPDATING DATA
+  const fetchUserData = async () => {
+    // read the data from async
+    const userDataString = await AsyncStorage.getItem('userData');
+
+    if (userDataString) {
+      // parse the data into an array
+      const userDataFromAsync = JSON.parse(userDataString);
+
+      if (userDataFromAsync !== null) {
+        setUserData(userDataFromAsync);
+      }
+    }
+  };
+
+  const updateUserData = async () => {
+    const userReference = database().ref(`/users/${userId}/`);
+
+    try {
+      // get user data
+      const userDataSnapshot = await userReference.once('value');
+      if (!userDataSnapshot.val()) {
+        throw new Error('Cannot access user data!');
+      }
+
+      const data = {
+        firstName: userDataSnapshot.val().firstName,
+        lastName: userDataSnapshot.val().lastName,
+        email: userDataSnapshot.val().email,
+        phone: userDataSnapshot.val().phone,
+        preferences: userDataSnapshot.val().preferences,
+      };
+
+      setUserData(data);
+    } catch (error) {
+      console.error('Error reading data: ', error.message);
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'android' ? 'height' : 'padding'}
       style={{ flex: 1 }}
     >
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary5]} // for Android
+            tintColor={Colors.primary5} // for iOS
+          />
+        }
+      >
         <View style={styles.container}>
           <HomeHeader
             onButtonPress={() => {
@@ -54,28 +136,28 @@ const AccountScreen = (props) => {
           <SettingsCard title="Personal Information" iconName="account-circle">
             <SettingItemEdit
               label="First name"
-              value="John"
+              value={userData.firstName}
               placeholder="Enter your first name"
               keyboardType="default"
               secureTextEntry={false}
             />
             <SettingItemEdit
               label="Last name"
-              value="Smithsennn"
+              value={userData.lastName}
               placeholder="Enter your last name"
               keyboardType="default"
               secureTextEntry={false}
             />
             <SettingItemEdit
               label="Email"
-              value="john@smithsennn.com"
+              value={userData.email}
               placeholder="Enter your email address"
               keyboardType="email-address"
               secureTextEntry={false}
             />
             <SettingItemEdit
               label="Phone"
-              value="12353254345"
+              value={userData.phone}
               placeholder="Enter your phone number"
               keyboardType="phone-pad"
               secureTextEntry={false}
@@ -96,7 +178,20 @@ const AccountScreen = (props) => {
             </View>
           </SettingsCard>
           <SettingsCard title="Preferences" iconName="tune">
-            <Text>Dark mode - toggle</Text>
+            <View style={styles.preferenceContainer}>
+              <Text>Dark mode - toggle</Text>
+              <View style={styles.toggleContainer}>
+                <Text>Text1</Text>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={isEnabled}
+                />
+                <Text>Text2</Text>
+              </View>
+            </View>
             <Text>Sound - slider</Text>
             <View style={styles.preferenceContainer}>
               <Text>Language</Text>
@@ -185,6 +280,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+  },
+
+  toggleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
 });
 

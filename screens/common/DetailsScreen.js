@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import database from '@react-native-firebase/database';
-import { ScrollView } from 'react-native-gesture-handler';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from 'react-native';
 import { useSelector } from 'react-redux';
-import { CommonActions } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import database from '@react-native-firebase/database';
 
 import Colors from '../../constants/Colors.js';
 import TimeCard from '../../components/UI/TimeCard.js';
 import CommentCard from '../../components/UI/CommentCard.js';
 
 const DetailsScreen = (props) => {
-  const clockingId = props.route.params?.id;
-
-  const [locationName, setLocationName] = useState(' - ');
+  const [refreshing, setRefreshing] = useState(false);
   const [clockingData, setClockingData] = useState({
     date: ' - ',
     startTime: ' - ',
@@ -23,9 +26,58 @@ const DetailsScreen = (props) => {
     description: ' - ',
   });
 
+  const clockingId = props.route.params?.id;
   const userId = useSelector((state) => state.auth.userId);
 
+  // disable and hide bottom navigation on this screen
+  useEffect(() => {
+    fetchClockingData();
+
+    // disable the drawer on this screen
+    props.navigation.getParent().getParent()?.setOptions({
+      swipeEdgeWidth: 0,
+    });
+
+    return () => {
+      // reactivate the drawer
+      props.navigation.getParent().getParent()?.setOptions({
+        swipeEdgeWidth: 25,
+      });
+    };
+  }, []);
+
+  // PULL DOWN TO REFRESH SCROLL VIEW
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    updateClockingData();
+
+    // simulate a short delay if wanted
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
+  // FETCHING AND UPDATING DATA
   const fetchClockingData = async () => {
+    // read the data from async
+    const clockingsDataString = await AsyncStorage.getItem('userClockings');
+
+    if (clockingsDataString) {
+      // parse the data into an array
+      const clockingsData = JSON.parse(clockingsDataString);
+
+      // find the clocking matching the id
+      const clockingFromAsync = clockingsData.find(
+        (item) => item.clockingId === clockingId
+      );
+
+      if (clockingFromAsync !== null) {
+        setClockingData(clockingFromAsync.clockingData);
+      }
+    }
+  };
+
+  const updateClockingData = async () => {
     const clockingsReference = database().ref(
       `/clockings/${userId}/${clockingId}/`
     );
@@ -55,37 +107,48 @@ const DetailsScreen = (props) => {
         const locationName = locationSnapshot.val()[data.locationId].name;
 
         setClockingData({ ...data, locationName });
+
+        updateAsyncStorageData(clockingId, { ...data, locationName });
       }
     } catch (error) {
       console.error('Error reading data: ', error.message);
     }
   };
 
-  // disable and hide bottom navigation on this screen
-  useEffect(() => {
-    fetchClockingData();
+  const updateAsyncStorageData = async (clockingId, updatedClockingData) => {
+    // read the data from async
+    const clockingsDataString = await AsyncStorage.getItem('userClockings');
 
-    // props.navigation.getParent()?.setOptions({
-    //   tabBarStyle: {
-    //     display: 'none',
-    //   },
-    // });
+    const clockingDataArray = clockingsDataString
+      ? JSON.parse(clockingsDataString)
+      : [];
 
-    // disable the drawer on this screen
-    props.navigation.getParent().getParent()?.setOptions({
-      swipeEdgeWidth: 0,
+    const updatedClockingArray = clockingDataArray.map((obj) => {
+      if (obj.clockingId === clockingId) {
+        obj.clockingData = updatedClockingData;
+      }
+      return obj;
     });
 
-    return () => {
-      // reactivate the drawer
-      props.navigation.getParent().getParent()?.setOptions({
-        swipeEdgeWidth: 25,
-      });
-    };
-  }, []);
+    await AsyncStorage.setItem(
+      'userClockings',
+      JSON.stringify(updatedClockingArray)
+    );
+    console.log('updated');
+  };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <ScrollView
+      style={styles.scrollContainer}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[Colors.primary5]} // for Android
+          tintColor={Colors.primary5} // for iOS
+        />
+      }
+    >
       <View style={styles.container}>
         <View style={styles.detailsContainer}>
           <View style={styles.statusContainer}>
