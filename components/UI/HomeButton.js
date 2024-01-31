@@ -1,12 +1,9 @@
 import React from 'react';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import {
-  View,
-  Text,
-  StyleSheet,
   TouchableOpacity,
   TouchableNativeFeedback,
-  Platform,
-} from 'react-native';
+} from 'react-native-gesture-handler';
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -20,45 +17,68 @@ const HomeButton = (props) => {
     TouchableComponent = TouchableNativeFeedback;
   }
 
+  const content = (
+    <View style={styles.buttonContainer}>
+      <View style={styles.infoContainer}>
+        <Text style={{ ...commonStyles.text, ...styles.labelText }}>
+          {props.labelText}
+        </Text>
+        <Text style={{ ...commonStyles.text, ...styles.chosenText }}>
+          {props.chosenText}
+        </Text>
+      </View>
+      <MaterialCommunityIcon
+        name={props.iconName}
+        size={40}
+        color={Colors.primary1}
+        style={styles.infoIcon}
+      />
+    </View>
+  );
+
   return (
-    <View style={{ ...styles.mainContainer, ...props.style }}>
-      <TouchableComponent onPress={props.onButtonPress}>
-        <View style={styles.buttonContainer}>
-          <View style={styles.infoContainer}>
-            <Text style={{ ...commonStyles.text, ...styles.labelText }}>
-              {props.labelText}
-            </Text>
-            <Text style={{ ...commonStyles.text, ...styles.chosenText }}>
-              {props.chosenText}
-            </Text>
-          </View>
-          <MaterialCommunityIcon
-            name={props.iconName}
-            size={40}
-            color={Colors.accent1}
-            style={styles.infoIcon}
-          />
-        </View>
-      </TouchableComponent>
+    <View style={styles.mainContainer}>
+      <View style={{ ...styles.mainButton, ...props.style }}>
+        <TouchableComponent
+          onPress={props.onButtonPress}
+          // background={TouchableNativeFeedback.Ripple(Colors.primary6, true)}
+          // useForeground
+        >
+          {content}
+        </TouchableComponent>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
-    width: '90%',
+    width: '95%',
+    height: 75,
+    paddingHorizontal: 10,
+    paddingBottom: 15,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+
+  mainButton: {
+    width: '100%',
     height: 60,
     backgroundColor: Colors.primary5,
     borderRadius: 20,
-    //marginLeft: '5%',
+    elevation: 6,
     overflow: 'hidden',
   },
 
   buttonContainer: {
-    flex: 1,
+    width: '100%',
+    height: 60,
+    backgroundColor: Colors.primary5,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderRadius: 20,
   },
 
   infoContainer: {

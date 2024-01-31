@@ -8,12 +8,13 @@ import {
   Platform,
   ScrollView,
   RefreshControl,
-  Switch,
+  Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { SelectList } from 'react-native-dropdown-select-list';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 
 import * as appDataActions from '../../store/actions/appData.js';
 
@@ -28,14 +29,36 @@ const AccountScreen = (props) => {
   const [selected, setSelected] = useState('');
   const [darkEnabled, setDarkEnabled] = useState(false);
   const [refreshing, setRefreshing] = useState();
+
+  // data used to update the fields by the user
   const [userData, setUserData] = useState({
     firstName: '-',
     lastName: '-',
     email: '-',
     phone: '-',
     preferences: {},
+    changed: false,
   });
 
+  // data used to discard changes made by the user
+  const [initUserData, setInitUserData] = useState({
+    firstName: '-',
+    lastName: '-',
+    email: '-',
+    phone: '-',
+    preferences: {},
+    changed: false,
+  });
+
+  // data used to change the password by the user
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    changed: false,
+  });
+
+  // options for the drop-down menu for app language
   const languageOptions = [
     { key: '1', value: 'English' },
     { key: '2', value: 'Romanian' },
@@ -44,21 +67,54 @@ const AccountScreen = (props) => {
     { key: '5', value: 'German' },
   ];
 
-  const userId = useSelector((state) => state.auth.userId);
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.auth.userId);
+  const userReference = database().ref(`/users/${userId}/`);
 
+  // update the active screen data from store
   useFocusEffect(
     React.useCallback(() => {
       dispatch(appDataActions.setActiveScreen('Account'));
     }, [dispatch])
   );
 
+  // call the fetch data method on screen load
   useEffect(() => {
     fetchUserData();
   }, []);
 
   const toggleDarkSwitch = () => {
     setDarkEnabled((prevState) => !prevState);
+  };
+
+  // TEXT INPUT HANDLER FOR PERSONAL DATA
+  const handleInputChange = (field, text) => {
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      [field]: text,
+    }));
+
+    if (!userData.changed) {
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        changed: true,
+      }));
+    }
+  };
+
+  // TEXT INPUT HANDLER FOR PASSWORD INPUTS
+  const handlePasswordInputChange = (field, text) => {
+    setPasswordData((prevPasswordData) => ({
+      ...prevPasswordData,
+      [field]: text,
+    }));
+
+    if (!passwordData.changed) {
+      setPasswordData((prevPasswordData) => ({
+        ...prevPasswordData,
+        changed: true,
+      }));
+    }
   };
 
   // PULL DOWN TO REFRESH SCROLL VIEW
@@ -83,13 +139,12 @@ const AccountScreen = (props) => {
 
       if (userDataFromAsync !== null) {
         setUserData(userDataFromAsync);
+        setInitUserData(userDataFromAsync);
       }
     }
   };
 
   const updateUserData = async () => {
-    const userReference = database().ref(`/users/${userId}/`);
-
     try {
       // get user data
       const userDataSnapshot = await userReference.once('value');
@@ -106,8 +161,67 @@ const AccountScreen = (props) => {
       };
 
       setUserData(data);
+      setInitUserData(data);
     } catch (error) {
       console.error('Error reading data: ', error.message);
+    }
+  };
+
+  // WRITE DATA TO DATABASE
+  const writeDataToDatabase = (data) => {
+    if (userData.changed) {
+      // write data
+      userReference
+        .update(data)
+        .then(() => {
+          setInitUserData((prevInitUserData) => ({
+            ...prevInitUserData,
+            ...data,
+          }));
+          console.log('Data updated successfully.');
+        })
+        .catch(() => {
+          console.error('Error updating the data: ', error);
+        });
+    }
+  };
+
+  // CHANGE PASSWORD HANDLER
+  const handleChangePassword = async () => {
+    if (passwordData.changed) {
+      try {
+        const user = auth().currentUser;
+
+        // try and reauthenticate the user with the current password entered
+        const credential = auth.EmailAuthProvider.credential(
+          user.email,
+          passwordData.currentPassword
+        );
+        await user.reauthenticateWithCredential(credential);
+
+        // if this is reached then the reauthentication was successful, update the password
+        await user.updatePassword(passwordData.newPassword);
+
+        // Show an alert
+        Alert.alert(
+          'Success',
+          'Password updated successfully. You will be signed out now.',
+          [
+            {
+              text: 'Ok',
+              onPress: () => {
+                dispatch(appDataActions.setNavigationFlow('auth'));
+              },
+            },
+          ]
+        );
+      } catch (error) {
+        console.error('Error updating password:', error);
+        Alert.alert(
+          'Error',
+          'Failed to update password. Please check your current password.'
+        );
+      }
     }
   };
 
@@ -139,6 +253,7 @@ const AccountScreen = (props) => {
               label="First name"
               value={userData.firstName}
               placeholder="Enter your first name"
+              onChangeText={(text) => handleInputChange('firstName', text)}
               keyboardType="default"
               secureTextEntry={false}
             />
@@ -146,6 +261,7 @@ const AccountScreen = (props) => {
               label="Last name"
               value={userData.lastName}
               placeholder="Enter your last name"
+              onChangeText={(text) => handleInputChange('lastName', text)}
               keyboardType="default"
               secureTextEntry={false}
             />
@@ -153,6 +269,7 @@ const AccountScreen = (props) => {
               label="Email"
               value={userData.email}
               placeholder="Enter your email address"
+              onChangeText={(text) => handleInputChange('email', text)}
               keyboardType="email-address"
               secureTextEntry={false}
             />
@@ -160,6 +277,7 @@ const AccountScreen = (props) => {
               label="Phone"
               value={userData.phone}
               placeholder="Enter your phone number"
+              onChangeText={(text) => handleInputChange('phone', text)}
               keyboardType="phone-pad"
               secureTextEntry={false}
             />
@@ -168,13 +286,22 @@ const AccountScreen = (props) => {
                 title="Discard"
                 titleColor={Colors.primary1}
                 buttonColor={Colors.primary5}
-                onButtonPress={() => {}}
+                onButtonPress={() => {
+                  setUserData(initUserData);
+                }}
               />
               <CustomButton
                 title="Save Changes"
                 titleColor={Colors.primary1}
-                buttonColor={Colors.secondary5}
-                onButtonPress={() => {}}
+                buttonColor={Colors.accent5}
+                onButtonPress={() => {
+                  writeDataToDatabase({
+                    email: userData.email,
+                    firstName: userData.firstName,
+                    lastName: userData.lastName,
+                    phone: userData.phone,
+                  });
+                }}
               />
             </View>
           </SettingsCard>
@@ -215,34 +342,52 @@ const AccountScreen = (props) => {
           <SettingsCard title="Password and Security" iconName="key">
             <SettingItemEdit
               label="Current Password"
+              value={passwordData.currentPassword}
+              placeholder="Enter your current password"
+              onChangeText={(text) =>
+                handlePasswordInputChange('currentPassword', text)
+              }
               autoCapitalize="none"
               secureTextEntry={true}
-              placeholder="Enter your current password"
             />
             <SettingItemEdit
               label="New Password"
-              autoCapitalize="none"
-              secureTextEntry={true}
+              value={passwordData.newPassword}
               placeholder="Enter your new password"
+              onChangeText={(text) =>
+                handlePasswordInputChange('newPassword', text)
+              }
+              autoCapitalize={'none'}
+              secureTextEntry={true}
             />
             <SettingItemEdit
               label="Confirm Password"
+              value={passwordData.confirmPassword}
+              placeholder="Confirm your new password"
+              onChangeText={(text) =>
+                handlePasswordInputChange('confirmPassword', text)
+              }
               autoCapitalize="none"
               secureTextEntry={true}
-              placeholder="Confirm your new password"
             />
             <View style={styles.buttonsContainer}>
               <CustomButton
                 title="Discard"
                 titleColor={Colors.primary1}
                 buttonColor={Colors.primary5}
-                onButtonPress={() => {}}
+                onButtonPress={() => {
+                  setPasswordData({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: '',
+                  });
+                }}
               />
               <CustomButton
                 title="Save Changes"
                 titleColor={Colors.primary1}
-                buttonColor={Colors.secondary5}
-                onButtonPress={() => {}}
+                buttonColor={Colors.accent5}
+                onButtonPress={handleChangePassword}
               />
             </View>
           </SettingsCard>

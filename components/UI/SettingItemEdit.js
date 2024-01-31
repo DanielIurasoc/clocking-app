@@ -6,7 +6,11 @@ const SettingItemEdit = ({ label, secureTextEntry, ...inputProps }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}> {label} </Text>
-      <TextInput style={styles.input} {...inputProps} />
+      <TextInput
+        style={styles.input}
+        secureTextEntry={secureTextEntry}
+        {...inputProps}
+      />
     </View>
   );
 };

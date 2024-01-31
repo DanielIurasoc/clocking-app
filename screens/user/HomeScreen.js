@@ -339,17 +339,17 @@ const styles = StyleSheet.create({
   mainButton: {
     width: 130,
     height: 40,
-    marginTop: 10,
     borderRadius: 20,
-    backgroundColor: Colors.secondary8,
+    backgroundColor: Colors.accent5,
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   mainButtonText: {
+    fontFamily: 'poppins-medium',
     paddingTop: 4,
     fontSize: 18,
-    color: Colors.accent1,
+    color: Colors.primary1,
   },
 });
 
