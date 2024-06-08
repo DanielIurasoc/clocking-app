@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 
+import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import * as appDataActions from '../../store/actions/appData.js';
 
 import Colors from '../../constants/Colors.js';
@@ -27,8 +28,14 @@ import CustomSwitch from '../../components/UI/CustomSwitch.js';
 
 const AccountScreen = (props) => {
   const [selected, setSelected] = useState('');
-  const [darkEnabled, setDarkEnabled] = useState(false);
   const [refreshing, setRefreshing] = useState();
+  useEffect(() => {
+    console.log(theme);
+  }, []);
+
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
 
   // data used to update the fields by the user
   const [userData, setUserData] = useState({
@@ -67,6 +74,8 @@ const AccountScreen = (props) => {
     { key: '5', value: 'German' },
   ];
 
+  const darkEnabled = useSelector((state) => state.appData.darkModeOn);
+
   const dispatch = useDispatch();
   const userId = useSelector((state) => state.auth.userId);
   const userReference = database().ref(`/users/${userId}/`);
@@ -84,7 +93,7 @@ const AccountScreen = (props) => {
   }, []);
 
   const toggleDarkSwitch = () => {
-    setDarkEnabled((prevState) => !prevState);
+    dispatch(appDataActions.toggleDarkMode(!darkEnabled));
   };
 
   // TEXT INPUT HANDLER FOR PERSONAL DATA
@@ -236,8 +245,8 @@ const AccountScreen = (props) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[Colors.primary5]} // for Android
-            tintColor={Colors.primary5} // for iOS
+            colors={[theme.primary5]} // for Android
+            tintColor={theme.primary5} // for iOS
           />
         }
       >
@@ -284,16 +293,16 @@ const AccountScreen = (props) => {
             <View style={styles.buttonsContainer}>
               <CustomButton
                 title="Discard"
-                titleColor={Colors.primary1}
-                buttonColor={Colors.primary5}
+                titleColor={theme.primary1}
+                buttonColor={theme.primary5}
                 onButtonPress={() => {
                   setUserData(initUserData);
                 }}
               />
               <CustomButton
                 title="Save Changes"
-                titleColor={Colors.primary1}
-                buttonColor={Colors.accent5}
+                titleColor={theme.primary1}
+                buttonColor={theme.accent5}
                 onButtonPress={() => {
                   writeDataToDatabase({
                     email: userData.email,
@@ -307,24 +316,25 @@ const AccountScreen = (props) => {
           </SettingsCard>
           <SettingsCard title="Preferences" iconName="tune">
             <View style={styles.preferenceContainer}>
-              <Text>Dark mode (On / Off) </Text>
+              <Text>Dark mode (Off / On) </Text>
               <CustomSwitch
                 isEnabled={darkEnabled}
                 toggleSwitch={toggleDarkSwitch}
                 iconOn="weather-night" //"moon-waxing-crescent"
                 iconOff="white-balance-sunny"
-                iconColor={Colors.primary1}
-                colorOn={Colors.green5}
-                colorOff={Colors.accent5}
-                barColorOn={Colors.green3}
-                barColorOff={Colors.accent3}
+                iconColor={theme.primary1}
+                colorOn={theme.accent5}
+                colorOff={theme.primary3}
+                barColorOn={theme.accent3}
+                barColorOff={theme.primary2}
                 size={22}
               />
             </View>
             <Text>Sound - slider</Text>
             <View style={styles.preferenceContainer}>
               <Text>Language</Text>
-              <SelectList
+              <Text> *tbd</Text>
+              {/* <SelectList
                 setSelected={setSelected}
                 data={languageOptions}
                 save="value"
@@ -336,7 +346,7 @@ const AccountScreen = (props) => {
                 }}
                 inputStyles={{ fontSize: 14 }}
                 defaultOption={{ key: '1', value: 'English' }}
-              />
+              /> */}
             </View>
           </SettingsCard>
           <SettingsCard title="Password and Security" iconName="key">
@@ -373,8 +383,8 @@ const AccountScreen = (props) => {
             <View style={styles.buttonsContainer}>
               <CustomButton
                 title="Discard"
-                titleColor={Colors.primary1}
-                buttonColor={Colors.primary5}
+                titleColor={theme.primary1}
+                buttonColor={theme.primary5}
                 onButtonPress={() => {
                   setPasswordData({
                     currentPassword: '',
@@ -385,8 +395,8 @@ const AccountScreen = (props) => {
               />
               <CustomButton
                 title="Save Changes"
-                titleColor={Colors.primary1}
-                buttonColor={Colors.accent5}
+                titleColor={theme.primary1}
+                buttonColor={theme.accent5}
                 onButtonPress={handleChangePassword}
               />
             </View>
@@ -397,45 +407,46 @@ const AccountScreen = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
 
-  text: {
-    fontSize: 20,
-  },
+    text: {
+      fontSize: 20,
+    },
 
-  settingContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    paddingVertical: 2,
-  },
+    settingContainer: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      paddingVertical: 2,
+    },
 
-  buttonsContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
+    buttonsContainer: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+    },
 
-  preferenceContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
+    preferenceContainer: {
+      width: '100%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+    },
 
-  toggleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-});
+    toggleContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      marginTop: 20,
+    },
+  });
 
 export default AccountScreen;

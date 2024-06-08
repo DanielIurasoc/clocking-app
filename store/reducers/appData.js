@@ -3,6 +3,7 @@ import {
   SET_NAVIGATION_FLOW,
   SET_CLOCKING_DATA,
   CLEAR_CLOCKING_DATA,
+  TOGGLE_DARK_MODE,
 } from '../actions/appData.js';
 
 const initialState = {
@@ -16,6 +17,8 @@ const initialState = {
   endTime: ' - ',
   pauseTime: ' 00 : 00 ',
 
+  // user preferences
+  darkModeOn: false,
   // to be added
   // dark mode enabled
   // etc
@@ -32,6 +35,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         navigationFlow: action.payload,
+      };
+    case TOGGLE_DARK_MODE:
+      return {
+        ...state,
+        darkModeOn: action.payload,
       };
     case SET_CLOCKING_DATA:
       return {

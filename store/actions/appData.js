@@ -2,6 +2,7 @@ export const SET_ACTIVE_SCREEN = 'SET_ACTIVE_SCREEN';
 export const SET_NAVIGATION_FLOW = 'SET_NAVIGATION_FLOW';
 export const SET_CLOCKING_DATA = 'SET_CLOCKING_DATA';
 export const CLEAR_CLOCKING_DATA = 'CLEAR_CLOCKING_DATA';
+export const TOGGLE_DARK_MODE = 'TOGGLE_DARK_MODE';
 
 export const setActiveScreen = (screen) => {
   return {
@@ -30,5 +31,13 @@ export const setClockingData = (identifier, data) => {
 export const clearClockingData = () => {
   return {
     type: CLEAR_CLOCKING_DATA,
+  };
+};
+
+export const toggleDarkMode = (darkModeOn) => {
+  console.log('entered action');
+  return {
+    type: TOGGLE_DARK_MODE,
+    payload: darkModeOn,
   };
 };

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import {
   View,
   Alert,
@@ -14,12 +14,17 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useDispatch } from 'react-redux';
 import database from '@react-native-firebase/database';
 
+import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import Colors from '../../constants/Colors.js';
 
 import * as appDataActions from '../../store/actions/appData.js';
 import QRMask from '../../Resources/SVGs/QR_Mask.svg';
 
 const ScannerScreen = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   const [scanned, setScanned] = useState(false);
   const [scannedData, setScannedData] = useState({
     name: undefined,
@@ -217,82 +222,85 @@ const ScannerScreen = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-    backgroundColor: '#000',
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'space-between',
+      backgroundColor: '#000',
+    },
 
-  fillerTop: {
-    position: 'relative',
-    marginTop: 0,
-    width: Dimensions.get('screen').width,
-    height:
-      (Dimensions.get('screen').height - Dimensions.get('screen').width) * 0.35,
-    overflow: 'hidden',
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    fillerTop: {
+      position: 'relative',
+      marginTop: 0,
+      width: Dimensions.get('screen').width,
+      height:
+        (Dimensions.get('screen').height - Dimensions.get('screen').width) *
+        0.35,
+      overflow: 'hidden',
+      backgroundColor: '#000',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 
-  fillerBottom: {
-    position: 'absolute',
-    marginTop:
-      (Dimensions.get('screen').height - Dimensions.get('screen').width) *
-        0.35 +
-      Dimensions.get('screen').width,
-    width: Dimensions.get('screen').width,
-    height:
-      (Dimensions.get('screen').height - Dimensions.get('screen').width) * 0.65,
-    overflow: 'hidden',
-    backgroundColor: '#000',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    paddingHorizontal: '5%',
-    paddingBottom: '15%',
-  },
+    fillerBottom: {
+      position: 'absolute',
+      marginTop:
+        (Dimensions.get('screen').height - Dimensions.get('screen').width) *
+          0.35 +
+        Dimensions.get('screen').width,
+      width: Dimensions.get('screen').width,
+      height:
+        (Dimensions.get('screen').height - Dimensions.get('screen').width) *
+        0.65,
+      overflow: 'hidden',
+      backgroundColor: '#000',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+      paddingHorizontal: '5%',
+      paddingBottom: '15%',
+    },
 
-  scanContainer: {
-    height: Dimensions.get('screen').height,
-    width: Dimensions.get('screen').width,
-    overflow: 'hidden',
-  },
+    scanContainer: {
+      height: Dimensions.get('screen').height,
+      width: Dimensions.get('screen').width,
+      overflow: 'hidden',
+    },
 
-  cameraTitle: {
-    marginTop: 50,
-    fontFamily: 'poppins-medium',
-    fontSize: 24,
-    color: '#fff',
-  },
+    cameraTitle: {
+      marginTop: 50,
+      fontFamily: 'poppins-medium',
+      fontSize: 24,
+      color: '#fff',
+    },
 
-  infoText: {
-    fontFamily: 'poppins-regular',
-    fontSize: 18,
-    color: '#fff',
-    textAlign: 'center',
-  },
+    infoText: {
+      fontFamily: 'poppins-regular',
+      fontSize: 18,
+      color: '#fff',
+      textAlign: 'center',
+    },
 
-  orText: {
-    fontFamily: 'poppins-regular',
-    fontSize: 18,
-    color: '#636669',
-  },
+    orText: {
+      fontFamily: 'poppins-regular',
+      fontSize: 18,
+      color: '#636669',
+    },
 
-  cancelButtonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '40%',
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: 'red',
-  },
+    cancelButtonContainer: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '40%',
+      height: 50,
+      borderRadius: 30,
+      backgroundColor: 'red',
+    },
 
-  cancelButtonText: {
-    fontFamily: 'poppins-medium',
-    fontSize: 24,
-    color: '#fff',
-  },
-});
+    cancelButtonText: {
+      fontFamily: 'poppins-medium',
+      fontSize: 24,
+      color: '#fff',
+    },
+  });
 
 export default ScannerScreen;

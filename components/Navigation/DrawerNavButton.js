@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import commonStyles from '../commonStyles.js';
+
+import { ThemeContext } from '../UI/ThemeContext.js';
 import Colors from '../../constants/Colors.js';
 
 const DrawerNavButton = ({
@@ -13,6 +15,9 @@ const DrawerNavButton = ({
   onButtonPress,
   style,
 }) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+
   return (
     <TouchableOpacity
       style={{
@@ -25,8 +30,7 @@ const DrawerNavButton = ({
           paddingHorizontal: 10,
           borderRadius: 5,
           alignItems: 'center',
-          backgroundColor:
-            isActive === true ? Colors.primary5 : Colors.primary1,
+          backgroundColor: isActive === true ? theme.primary5 : theme.primary1,
         },
         ...style,
       }}
@@ -36,7 +40,7 @@ const DrawerNavButton = ({
         name={iconName}
         size={25}
         style={{
-          color: isActive === true ? Colors.primary1 : Colors.primary5,
+          color: isActive === true ? theme.primary1 : theme.primary5,
         }}
       />
 
@@ -46,7 +50,7 @@ const DrawerNavButton = ({
           ...{
             fontFamily: 'poppins-medium',
             fontSize: 16,
-            color: isActive === true ? Colors.primary1 : Colors.dark4,
+            color: isActive === true ? theme.primary1 : theme.dark4,
             marginLeft: 10,
             paddingTop: 5,
           },

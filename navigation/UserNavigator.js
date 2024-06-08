@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -7,7 +7,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Colors from '../constants/Colors.js';
+// import Colors from '../constants/Colors.js';
+import { ThemeContext } from '../components/UI/ThemeContext.js';
 
 import HomeScreen from '../screens/user/HomeScreen.js';
 import ClockingsScreen from '../screens/common/ClockingsScreen.js';
@@ -32,13 +33,14 @@ const myClockingsStack = createStackNavigator();
 const myBottomTab = createBottomTabNavigator();
 
 function DrawerNavigator() {
+  const { theme } = useContext(ThemeContext);
   return (
     <myDrawer.Navigator
       drawerContent={(props) => <CustomDrawer {...props} />}
       screenOptions={{
         headerShown: false,
-        drawerInactiveTintColor: Colors.primary5,
-        drawerActiveBackgroundColor: Colors.primary5,
+        drawerInactiveTintColor: theme.primary5,
+        drawerActiveBackgroundColor: theme.primary5,
         drawerActiveTintColor: '#fff',
         drawerLabelStyle: {
           marginLeft: -25,
@@ -60,6 +62,7 @@ function DrawerNavigator() {
 }
 
 function HomeStackNavigator(props) {
+  const { theme } = useContext(ThemeContext);
   return (
     <myHomeStack.Navigator
       initialRouteName="HomeScreen"
@@ -95,6 +98,7 @@ function HomeStackNavigator(props) {
 }
 
 function ClockingsStackNavigator(props) {
+  const { theme } = useContext(ThemeContext);
   return (
     <myClockingsStack.Navigator
       initialRouteName="ClockingsScreen"
@@ -120,6 +124,7 @@ function ClockingsStackNavigator(props) {
 }
 
 function BottomTabsNavigator() {
+  const { theme } = useContext(ThemeContext);
   return (
     <myBottomTab.Navigator
       initialRouteName="Home"
@@ -128,11 +133,11 @@ function BottomTabsNavigator() {
         headerShown: false,
         tabBarActiveTintColor: '#9E2A2B',
         tabBarStyle: {
-          backgroundColor: Colors.primary5,
+          backgroundColor: theme.primary5,
           height: 70,
         },
-        tabBarInactiveTintColor: Colors.primary2,
-        tabBarActiveTintColor: Colors.dark6,
+        tabBarInactiveTintColor: theme.primary2,
+        tabBarActiveTintColor: theme.dark6,
         tabBarHideOnKeyboard: true,
       }}
     >

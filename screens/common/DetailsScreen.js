@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,16 @@ import { useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
 
+import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import Colors from '../../constants/Colors.js';
 import TimeCard from '../../components/UI/TimeCard.js';
 import CommentCard from '../../components/UI/CommentCard.js';
 
 const DetailsScreen = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   const [refreshing, setRefreshing] = useState(false);
   const [clockingData, setClockingData] = useState({
     date: ' - ',
@@ -144,8 +149,8 @@ const DetailsScreen = (props) => {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          colors={[Colors.primary5]} // for Android
-          tintColor={Colors.primary5} // for iOS
+          colors={[theme.primary5]} // for Android
+          tintColor={theme.primary5} // for iOS
         />
       }
     >
@@ -153,7 +158,7 @@ const DetailsScreen = (props) => {
         <View style={styles.detailsContainer}>
           <View style={styles.statusContainer}>
             <Text style={styles.statusLabel}> Entry status: </Text>
-            <Text style={{ ...styles.statusInfo, ...{ color: Colors.green6 } }}>
+            <Text style={{ ...styles.statusInfo, ...{ color: theme.green6 } }}>
               approved
             </Text>
           </View>
@@ -213,135 +218,136 @@ const DetailsScreen = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  scrollContainer: {
-    //flex: 1,
-    width: '100%',
-    // justifyContent: 'center',
-    // alignItems: 'center',
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    scrollContainer: {
+      //flex: 1,
+      width: '100%',
+      // justifyContent: 'center',
+      // alignItems: 'center',
+    },
 
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
+    container: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
 
-  detailsContainer: {
-    width: '90%',
-    height: 200,
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
+    detailsContainer: {
+      width: '90%',
+      height: 200,
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+    },
 
-  statusContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    statusContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 
-  statusLabel: {
-    fontFamily: 'poppins-regular',
-    fontSize: 16,
-  },
+    statusLabel: {
+      fontFamily: 'poppins-regular',
+      fontSize: 16,
+    },
 
-  statusInfo: {
-    fontFamily: 'poppins-medium',
-    fontSize: 18,
-  },
+    statusInfo: {
+      fontFamily: 'poppins-medium',
+      fontSize: 18,
+    },
 
-  locationInfo: {
-    fontFamily: 'poppins-medium',
-    fontSize: 18,
-  },
+    locationInfo: {
+      fontFamily: 'poppins-medium',
+      fontSize: 18,
+    },
 
-  timeContainer: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    // alignItems: 'center',
-  },
+    timeContainer: {
+      width: '90%',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      // alignItems: 'center',
+    },
 
-  workedContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    workedContainer: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 
-  workedInfo: {
-    fontFamily: 'poppins-medium',
-    fontSize: 18,
-  },
+    workedInfo: {
+      fontFamily: 'poppins-medium',
+      fontSize: 18,
+    },
 
-  workedDate: {
-    fontFamily: 'poppins-regular',
-    fontSize: 16,
-  },
+    workedDate: {
+      fontFamily: 'poppins-regular',
+      fontSize: 16,
+    },
 
-  hoursContainer: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
+    hoursContainer: {
+      width: '90%',
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+    },
 
-  descriptionContainer: {
-    width: '90%',
-    paddingTop: 20,
-    paddingBottom: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    descriptionContainer: {
+      width: '90%',
+      paddingTop: 20,
+      paddingBottom: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 
-  title: {
-    fontFamily: 'poppins-regular',
-    fontSize: 16,
-    paddingBottom: 4,
-  },
+    title: {
+      fontFamily: 'poppins-regular',
+      fontSize: 16,
+      paddingBottom: 4,
+    },
 
-  description: {
-    fontFamily: 'poppins-regular',
-    fontSize: 14,
-  },
+    description: {
+      fontFamily: 'poppins-regular',
+      fontSize: 14,
+    },
 
-  photosContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    photosContainer: {
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 
-  photosInnerContainer: {
-    margin: 10,
-    marginTop: 0,
-    width: '90%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: Colors.dark2,
-    paddingTop: 5,
-    paddingBottom: 15,
-    elevation: 8,
-  },
+    photosInnerContainer: {
+      margin: 10,
+      marginTop: 0,
+      width: '90%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 20,
+      backgroundColor: theme.dark2,
+      paddingTop: 5,
+      paddingBottom: 15,
+      elevation: 8,
+    },
 
-  photos: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
+    photos: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+    },
 
-  photo: {
-    height: 75,
-    width: 75,
-    borderRadius: 20,
-    backgroundColor: Colors.dark3,
-  },
+    photo: {
+      height: 75,
+      width: 75,
+      borderRadius: 20,
+      backgroundColor: theme.dark3,
+    },
 
-  commentsContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-});
+    commentsContainer: {
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 10,
+    },
+  });
 
 export default DetailsScreen;

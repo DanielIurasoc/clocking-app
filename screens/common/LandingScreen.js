@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,15 @@ import {
   Dimensions,
 } from 'react-native';
 
+import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import StandardButton from '../../components/Auth/AuthButton.js';
 import commonStyles from '../../components/commonStyles.js';
 
 const LandingScreen = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -40,37 +45,38 @@ const LandingScreen = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
 
-  image: {
-    height: Dimensions.get('screen').height,
-    justifyContent: 'space-between',
-  },
+    image: {
+      height: Dimensions.get('screen').height,
+      justifyContent: 'space-between',
+    },
 
-  header: {
-    paddingHorizontal: '10%',
-    marginTop: Dimensions.get('screen').height * 0.2,
-    alignItems: 'flex-start',
-  },
+    header: {
+      paddingHorizontal: '10%',
+      marginTop: Dimensions.get('screen').height * 0.2,
+      alignItems: 'flex-start',
+    },
 
-  title: {
-    fontSize: 36,
-    lineHeight: 40,
-  },
+    title: {
+      fontSize: 36,
+      lineHeight: 40,
+    },
 
-  slogan: {
-    lineHeight: 30,
-    fontSize: 24,
-  },
+    slogan: {
+      lineHeight: 30,
+      fontSize: 24,
+    },
 
-  button: {
-    marginLeft: '10%',
-    width: Dimensions.get('screen').width * 0.8,
-    marginBottom: Dimensions.get('screen').height * 0.2,
-  },
-});
+    button: {
+      marginLeft: '10%',
+      width: Dimensions.get('screen').width * 0.8,
+      marginBottom: Dimensions.get('screen').height * 0.2,
+    },
+  });
 
 export default LandingScreen;

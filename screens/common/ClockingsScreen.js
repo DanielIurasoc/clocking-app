@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,12 +7,17 @@ import database from '@react-native-firebase/database';
 import ClockingItem from '../../components/ClockingItem.js';
 import SortButton from '../../components/SortButton.js';
 
+import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import commonStyles from '../../components/commonStyles.js';
 import CommonHeader from '../../components/UI/CommonHeader.js';
 import * as appDataActions from '../../store/actions/appData.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ClockingsScreen = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   const dispatch = useDispatch();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -103,30 +108,31 @@ const ClockingsScreen = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    mainContainer: {
+      flex: 1,
+      alignItems: 'center',
+    },
 
-  contentContainer: {
-    width: '90%',
-    alignItems: 'center',
-  },
+    contentContainer: {
+      width: '90%',
+      alignItems: 'center',
+    },
 
-  titleContainer: {
-    width: '100%',
-    height: 40,
-    marginTop: -8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+    titleContainer: {
+      width: '100%',
+      height: 40,
+      marginTop: -8,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
 
-  title: {
-    fontFamily: 'poppins-medium',
-    fontSize: 20,
-  },
-});
+    title: {
+      fontFamily: 'poppins-medium',
+      fontSize: 20,
+    },
+  });
 
 export default ClockingsScreen;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -9,9 +9,14 @@ import {
 } from 'react-native';
 
 import commonStyles from '../commonStyles.js';
+import { ThemeContext } from '../UI/ThemeContext.js';
 import Colors from '../../constants/Colors.js';
 
 const StandardButton = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   let TouchableComponent = TouchableOpacity;
   if (Platform.OS === 'android' && Platform.Version >= 21) {
     TouchableComponent = TouchableNativeFeedback;
@@ -40,40 +45,41 @@ const StandardButton = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: Colors.primary5,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    button: {
+      backgroundColor: theme.primary5,
+      borderRadius: 10,
+      overflow: 'hidden',
+    },
 
-  content1: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 2,
-    height: 50,
-  },
+    content1: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 15,
+      paddingVertical: 2,
+      height: 50,
+    },
 
-  content2: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 2,
-    height: 50,
-  },
+    content2: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 15,
+      paddingVertical: 2,
+      height: 50,
+    },
 
-  title1: {
-    fontSize: 28,
-  },
+    title1: {
+      fontSize: 28,
+    },
 
-  title2: {
-    fontFamily: 'poppins-medium',
-    fontSize: 36,
-    lineHeight: 48,
-  },
-});
+    title2: {
+      fontFamily: 'poppins-medium',
+      fontSize: 36,
+      lineHeight: 48,
+    },
+  });
 
 export default StandardButton;

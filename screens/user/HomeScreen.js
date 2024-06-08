@@ -1,4 +1,10 @@
-import React, { useReducer, useEffect, useCallback, useState } from 'react';
+import React, {
+  useReducer,
+  useEffect,
+  useCallback,
+  useState,
+  useContext,
+} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +15,8 @@ import * as appDataActions from '../../store/actions/appData.js';
 
 import Time from '../../models/Time.js';
 
-import Colors from '../../constants/Colors.js';
+// import Colors from '../../constants/Colors.js';
+import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import commonStyles from '../../components/commonStyles.js';
 import CustomText from '../../components/CustomText.js';
 import HomeHeader from '../../components/UI/HomeHeader.js';
@@ -23,6 +30,10 @@ const HomeScreen = (props) => {
   // HOME SCREEN DATA
   const dispatch = useDispatch();
   const reference = database().ref(`/clockings/${userId}/`);
+
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
 
   // FORM DATA
   const [formState, setFormState] = useState({
@@ -64,7 +75,7 @@ const HomeScreen = (props) => {
     props.navigation.getParent()?.setOptions({
       tabBarStyle: {
         // display: 'none',
-        backgroundColor: Colors.primary5,
+        backgroundColor: theme.primary5,
         height: 70,
         display: 'flex',
       },
@@ -320,37 +331,38 @@ const HomeScreen = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'flex-start',
+    },
 
-  mainContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    mainContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 
-  mainHeader: {
-    fontSize: 20,
-  },
+    mainHeader: {
+      fontSize: 20,
+    },
 
-  mainButton: {
-    width: 130,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: Colors.accent5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+    mainButton: {
+      width: 130,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.accent5,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
 
-  mainButtonText: {
-    fontFamily: 'poppins-medium',
-    paddingTop: 4,
-    fontSize: 18,
-    color: Colors.primary1,
-  },
-});
+    mainButtonText: {
+      fontFamily: 'poppins-medium',
+      paddingTop: 4,
+      fontSize: 18,
+      color: theme.primary1,
+    },
+  });
 
 export default HomeScreen;

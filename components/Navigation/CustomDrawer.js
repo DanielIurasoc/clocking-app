@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -16,9 +16,14 @@ import commonStyles from '../commonStyles.js';
 import * as appDataActions from '../../store/actions/appData.js';
 import * as authActions from '../../store/actions/auth.js';
 
+import { ThemeContext } from '../UI/ThemeContext.js';
 import Colors from '../../constants/Colors.js';
 
 const CustomDrawerNew = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   const dispatch = useDispatch();
   const activeScreen = useSelector((state) => state.appData.activeScreen);
 
@@ -152,144 +157,145 @@ const CustomDrawerNew = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  drawerContainer: {
-    flex: 1,
-    backgroundColor: Colors.primary1,
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    drawerContainer: {
+      flex: 1,
+      backgroundColor: theme.primary1,
+    },
 
-  drawerHeader: {
-    height: 160,
-    backgroundColor: Colors.primary5,
-    paddingTop: 50,
+    drawerHeader: {
+      height: 160,
+      backgroundColor: theme.primary5,
+      paddingTop: 50,
 
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+    },
 
-  accountDetailsContainer: {
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 10,
-    marginTop: 30,
-  },
+    accountDetailsContainer: {
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      paddingHorizontal: 10,
+      marginTop: 30,
+    },
 
-  accountImage: {
-    width: 80,
-    height: 80,
-    marginTop: 30,
-    borderColor: Colors.dark5,
-    borderWidth: 1,
-    borderRadius: 40,
-  },
+    accountImage: {
+      width: 80,
+      height: 80,
+      marginTop: 30,
+      borderColor: theme.dark5,
+      borderWidth: 1,
+      borderRadius: 40,
+    },
 
-  accountName: {
-    fontSize: 18,
-    lineHeight: 20,
-    fontFamily: 'poppins-600',
-  },
+    accountName: {
+      fontSize: 18,
+      lineHeight: 20,
+      fontFamily: 'poppins-600',
+    },
 
-  accountId: {
-    fontSize: 12,
-    lineHeight: 14,
-    fontFamily: 'poppins-medium',
-  },
+    accountId: {
+      fontSize: 12,
+      lineHeight: 14,
+      fontFamily: 'poppins-medium',
+    },
 
-  accountWork: {
-    fontSize: 14,
-    lineHeight: 16,
-    fontFamily: 'poppins-medium',
-  },
+    accountWork: {
+      fontSize: 14,
+      lineHeight: 16,
+      fontFamily: 'poppins-medium',
+    },
 
-  drawerContent: {
-    flex: 1,
-    flexDirection: 'column',
-  },
+    drawerContent: {
+      flex: 1,
+      flexDirection: 'column',
+    },
 
-  listContainer: {
-    backgroundColor: Colors.primary1,
-    paddingTop: 0,
-  },
+    listContainer: {
+      backgroundColor: theme.primary1,
+      paddingTop: 0,
+    },
 
-  navigationContainer: {
-    paddingVertical: 20,
-    marginBottom: 0,
-  },
+    navigationContainer: {
+      paddingVertical: 20,
+      marginBottom: 0,
+    },
 
-  functionalContainer: {
-    backgroundColor: Colors.primary1,
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    alignItems: 'left',
-    //marginTop: -75,
-    paddingBottom: 20,
-    borderTopWidth: 2,
-    borderTopColor: Colors.dark2,
-  },
+    functionalContainer: {
+      backgroundColor: theme.primary1,
+      flex: 1,
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
+      alignItems: 'left',
+      //marginTop: -75,
+      paddingBottom: 20,
+      borderTopWidth: 2,
+      borderTopColor: theme.dark2,
+    },
 
-  line1: {
-    alignSelf: 'center',
-    marginVertical: 5,
-    width: '90%',
-    height: 2,
-    backgroundColor: Colors.dark2,
-    marginTop: -100,
-  },
+    line1: {
+      alignSelf: 'center',
+      marginVertical: 5,
+      width: '90%',
+      height: 2,
+      backgroundColor: theme.dark2,
+      marginTop: -100,
+    },
 
-  line2: {
-    alignSelf: 'center',
-    marginVertical: 5,
-    width: '90%',
-    height: 2,
-    backgroundColor: Colors.dark2,
-  },
+    line2: {
+      alignSelf: 'center',
+      marginVertical: 5,
+      width: '90%',
+      height: 2,
+      backgroundColor: theme.dark2,
+    },
 
-  padding: {
-    paddingHorizontal: 30,
-  },
+    padding: {
+      paddingHorizontal: 30,
+    },
 
-  actionsContainer: {
-    paddingHorizontal: 30,
-    paddingTop: 20,
-    paddingBottom: 10,
-    borderTopWidth: 2,
-    borderTopColor: Colors.dark2,
-    //flex: 1,
-  },
+    actionsContainer: {
+      paddingHorizontal: 30,
+      paddingTop: 20,
+      paddingBottom: 10,
+      borderTopWidth: 2,
+      borderTopColor: theme.dark2,
+      //flex: 1,
+    },
 
-  version: {
-    fontSize: 10,
-    fontFamily: 'poppins-light',
-    textAlign: 'center',
-    marginTop: 10,
-  },
+    version: {
+      fontSize: 10,
+      fontFamily: 'poppins-light',
+      textAlign: 'center',
+      marginTop: 10,
+    },
 
-  actions: {
-    fontFamily: 'poppins-medium',
-    fontSize: 16,
-    lineHeight: 32,
-  },
+    actions: {
+      fontFamily: 'poppins-medium',
+      fontSize: 16,
+      lineHeight: 32,
+    },
 
-  button: {
-    height: 50,
-    width: 180,
-    flexDirection: 'row',
-    justifyContent: 'left',
-    alignItems: 'center',
+    button: {
+      height: 50,
+      width: 180,
+      flexDirection: 'row',
+      justifyContent: 'left',
+      alignItems: 'center',
 
-    //
-    alignSelf: 'left',
-  },
+      //
+      alignSelf: 'left',
+    },
 
-  title: {
-    fontFamily: 'poppins-medium',
-    fontSize: 16,
-    color: Colors.dark4,
-    marginLeft: 10,
-  },
-});
+    title: {
+      fontFamily: 'poppins-medium',
+      fontSize: 16,
+      color: theme.dark4,
+      marginLeft: 10,
+    },
+  });
 
 export default CustomDrawerNew;

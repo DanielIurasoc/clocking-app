@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Font from 'expo-font';
@@ -11,11 +11,13 @@ import auth from '@react-native-firebase/auth';
 import * as authActions from './store/actions/auth.js';
 import * as appDataActions from './store/actions/appData.js';
 
+import { ThemeContext } from './components/UI/ThemeContext.js';
 import AuthNavigator from './navigation/AuthNavigator.js';
 import UserNavigator from './navigation/UserNavigator.js';
 import AdminNavigator from './navigation/AdminNavigator.js';
 import CustomFonts from './constants/Fonts.js';
-import Colors from './constants/Colors.js';
+import ColorsUpdate from './components/UI/ColorsUpdate.js';
+// import Colors from './constants/Colors.js';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,8 +27,11 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   const navFlow = useSelector((state) => state.appData.navigationFlow);
+  const darkEnabled = useSelector((state) => state.appData.darkModeOn);
 
   const dispatch = useDispatch();
+
+  const { theme } = useContext(ThemeContext);
 
   // loading fonts
   useEffect(() => {
@@ -97,7 +102,6 @@ export default function App() {
   function onAuthStateChanged(user) {
     if (user !== null) {
       // store the user
-      setUser(user);
       dispatch(authActions.updateId(user.uid));
 
       // read and save the data to Async storage
@@ -122,8 +126,6 @@ export default function App() {
     return subscriber;
   }, []);
 
-  let userData;
-
   // Show/Hide the loading screen
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -135,7 +137,7 @@ export default function App() {
     return (
       <View>
         <Text> Loading. Please wait </Text>
-        <ActivityIndicator size="large" color={Colors.primary5} />
+        <ActivityIndicator size="large" color={theme.primary5} />
       </View>
     );
   }
@@ -148,6 +150,7 @@ export default function App() {
   // start the app if everything went well
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      {/* <ColorsUpdate /> */}
       {navFlow === 'auth' ? (
         <AuthNavigator />
       ) : navFlow === 'user' ? (

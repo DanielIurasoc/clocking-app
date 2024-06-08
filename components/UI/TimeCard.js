@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import commonStyles from '../commonStyles';
+
+import { ThemeContext } from './ThemeContext';
 import Colors from '../../constants/Colors';
 
 const TimeCard = ({ color, label, content }) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   return (
     <View
       style={{
@@ -12,10 +18,10 @@ const TimeCard = ({ color, label, content }) => {
         ...{
           borderColor:
             color === 'green'
-              ? Colors.green5
+              ? theme.green5
               : color === 'yellow'
-              ? Colors.accent3
-              : Colors.primary4,
+              ? theme.accent3
+              : theme.primary4,
         },
       }}
     >
@@ -25,25 +31,26 @@ const TimeCard = ({ color, label, content }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    minWidth: '27%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 8,
-    borderWidth: 2.5,
-    borderColor: Colors.green5,
-    borderRadius: 20,
-  },
+const myStylestyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      minWidth: '27%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 8,
+      borderWidth: 2.5,
+      borderColor: theme.green5,
+      borderRadius: 20,
+    },
 
-  label: {
-    fontSize: 16,
-  },
+    label: {
+      fontSize: 16,
+    },
 
-  content: {
-    fontFamily: 'poppins-medium',
-    fontSize: 20,
-  },
-});
+    content: {
+      fontFamily: 'poppins-medium',
+      fontSize: 20,
+    },
+  });
 
 export default TimeCard;

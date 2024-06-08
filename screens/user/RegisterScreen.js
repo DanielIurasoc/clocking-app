@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useCallback,
+  useContext,
+} from 'react';
 import {
   View,
   Text,
@@ -15,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import * as appDataActions from '../../store/actions/appData.js';
 import * as authActions from '../../store/actions/auth.js';
 
+import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import commonStyles from '../../components/commonStyles.js';
 import Colors from '../../constants/Colors.js';
 import StandardButton from '../../components/Auth/AuthButton.js';
@@ -50,6 +57,10 @@ const formReducer = (state, action) => {
 };
 
 const RegisterScreen = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorOccured, setErrorOccured] = useState(undefined);
 
@@ -258,95 +269,96 @@ const RegisterScreen = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+const myStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
 
-  image: {
-    height: Dimensions.get('screen').height,
-    paddingTop: StatusBar.currentHeight,
+    image: {
+      height: Dimensions.get('screen').height,
+      paddingTop: StatusBar.currentHeight,
 
-    justifyContent: 'space-between',
-  },
+      justifyContent: 'space-between',
+    },
 
-  backButton: {
-    paddingLeft: StatusBar.currentHeight / 4,
-  },
+    backButton: {
+      paddingLeft: StatusBar.currentHeight / 4,
+    },
 
-  backButtonText: {
-    fontFamily: 'poppins-medium',
-    fontSize: 36,
-  },
+    backButtonText: {
+      fontFamily: 'poppins-medium',
+      fontSize: 36,
+    },
 
-  loginContainer: {
-    flex: 0.9,
-    justifyContent: 'space-evenly',
-    paddingHorizontal: '10%',
-    paddingVertical: '5%',
-    alignItems: 'center',
-    backgroundColor: Colors.secondary1,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-  },
+    loginContainer: {
+      flex: 0.9,
+      justifyContent: 'space-evenly',
+      paddingHorizontal: '10%',
+      paddingVertical: '5%',
+      alignItems: 'center',
+      backgroundColor: theme.secondary1,
+      borderTopLeftRadius: 15,
+      borderTopRightRadius: 15,
+    },
 
-  loginTitle: {
-    fontFamily: 'poppins-medium',
-    fontSize: 24,
-  },
+    loginTitle: {
+      fontFamily: 'poppins-medium',
+      fontSize: 24,
+    },
 
-  group1: {
-    width: '100%',
-    justifyContent: 'flex-start',
-  },
+    group1: {
+      width: '100%',
+      justifyContent: 'flex-start',
+    },
 
-  group2: {
-    width: '100%',
-    alignItems: 'center',
-    paddingBottom: 20,
-  },
+    group2: {
+      width: '100%',
+      alignItems: 'center',
+      paddingBottom: 20,
+    },
 
-  group3: {
-    width: '100%',
-    alignItems: 'center',
-    paddingBottom: 40,
-  },
+    group3: {
+      width: '100%',
+      alignItems: 'center',
+      paddingBottom: 40,
+    },
 
-  label: {
-    marginTop: 15,
-  },
+    label: {
+      marginTop: 15,
+    },
 
-  tocContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
+    tocContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
 
-  tocCheckbox: {},
+    tocCheckbox: {},
 
-  tocLabel: {
-    marginLeft: 10,
-    paddingTop: 10,
-    fontFamily: 'poppins-light',
-    fontSize: 14,
-  },
+    tocLabel: {
+      marginLeft: 10,
+      paddingTop: 10,
+      fontFamily: 'poppins-light',
+      fontSize: 14,
+    },
 
-  loginButton: {
-    width: '60%',
-  },
+    loginButton: {
+      width: '60%',
+    },
 
-  signInContent: {
-    paddingTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
+    signInContent: {
+      paddingTop: 10,
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
 
-  noAccountText: {},
+    noAccountText: {},
 
-  signInText: {
-    fontFamily: 'poppins-medium',
-    color: Colors.primary5,
-  },
-});
+    signInText: {
+      fontFamily: 'poppins-medium',
+      color: Colors.primary5,
+    },
+  });
 
 export default RegisterScreen;

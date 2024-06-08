@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,15 @@ import {
 } from 'react-native';
 
 import commonStyles from './commonStyles.js';
+
+import { ThemeContext } from './UI/ThemeContext.js';
 import Colors from '../constants/Colors.js';
 
 const ClockingItem = (props) => {
+  // color context
+  const { theme } = useContext(ThemeContext);
+  const styles = myStyles(theme);
+
   const { date, title, startTime, endTime } = props.clockingData;
 
   return (
@@ -36,69 +42,70 @@ const ClockingItem = (props) => {
   );
 };
 
-const styles = StyleSheet.create({
-  entryCard: {
-    height: 60,
-    width: Dimensions.get('window').width * 0.9, //'100%',
+const myStyles = (theme) =>
+  StyleSheet.create({
+    entryCard: {
+      height: 60,
+      width: Dimensions.get('window').width * 0.9, //'100%',
 
-    alignItems: 'center',
-    justifyContent: 'center',
+      alignItems: 'center',
+      justifyContent: 'center',
 
-    //iOS
-    shadowColor: 'black',
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
+      //iOS
+      shadowColor: 'black',
+      shadowOpacity: 0.25,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 8,
 
-    // android
-    elevation: 10,
+      // android
+      elevation: 10,
 
-    borderRadius: 20,
-    backgroundColor: Colors.primary5,
-    marginTop: 16,
-  },
+      borderRadius: 20,
+      backgroundColor: theme.primary5,
+      marginTop: 16,
+    },
 
-  button: {
-    width: '90%',
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    // paddingHorizontal: 10,
-  },
+    button: {
+      width: '90%',
+      height: 50,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      // paddingHorizontal: 10,
+    },
 
-  content: {
-    //width: '90%',
-    //flex: 1,
-    height: 50,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    marginTop: 7,
-  },
+    content: {
+      //width: '90%',
+      //flex: 1,
+      height: 50,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+      marginTop: 7,
+    },
 
-  index: {
-    fontFamily: 'poppins-medium',
-    fontSize: 28,
-    height: 60,
-    paddingVertical: 11,
-    color: Colors.accent1,
-    paddingHorizontal: 20,
-  },
+    index: {
+      fontFamily: 'poppins-medium',
+      fontSize: 28,
+      height: 60,
+      paddingVertical: 11,
+      color: theme.accent1,
+      paddingHorizontal: 20,
+    },
 
-  location: {
-    fontSize: 16,
-    lineHeight: 20,
-    color: Colors.dark5,
-    width: 280,
-  },
+    location: {
+      fontSize: 16,
+      lineHeight: 20,
+      color: theme.dark5,
+      width: 280,
+    },
 
-  dateAndTime: {
-    fontSize: 20,
-    lineHeight: 24,
-    color: Colors.dark5,
-    width: 280,
-  },
-});
+    dateAndTime: {
+      fontSize: 20,
+      lineHeight: 24,
+      color: theme.dark5,
+      width: 280,
+    },
+  });
 
 export default ClockingItem;
