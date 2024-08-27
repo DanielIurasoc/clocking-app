@@ -11,7 +11,6 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(lightTheme);
 
   useEffect(() => {
-    console.log('entered here');
     const newTheme = darkMode ? darkTheme : lightTheme;
     setTheme(newTheme);
     Object.keys(Colors).forEach((key) => {

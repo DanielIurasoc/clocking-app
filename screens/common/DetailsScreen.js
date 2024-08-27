@@ -11,7 +11,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
 
 import { ThemeContext } from '../../components/UI/ThemeContext.js';
-import Colors from '../../constants/Colors.js';
 import TimeCard from '../../components/UI/TimeCard.js';
 import CommentCard from '../../components/UI/CommentCard.js';
 
@@ -38,15 +37,31 @@ const DetailsScreen = (props) => {
   useEffect(() => {
     fetchClockingData();
 
+    props.navigation.getParent()?.setOptions({
+      tabBarStyle: {
+        display: 'none',
+      },
+    });
+
     // disable the drawer on this screen
     props.navigation.getParent().getParent()?.setOptions({
       swipeEdgeWidth: 0,
     });
 
+    // on exit
     return () => {
       // reactivate the drawer
       props.navigation.getParent().getParent()?.setOptions({
         swipeEdgeWidth: 25,
+      });
+
+      // reactivate the bottom navigation
+      props.navigation.getParent()?.setOptions({
+        tabBarStyle: {
+          backgroundColor: theme.primary5,
+          height: 70,
+          display: 'flex',
+        },
       });
     };
   }, []);
@@ -221,10 +236,7 @@ const DetailsScreen = (props) => {
 const myStyles = (theme) =>
   StyleSheet.create({
     scrollContainer: {
-      //flex: 1,
       width: '100%',
-      // justifyContent: 'center',
-      // alignItems: 'center',
     },
 
     container: {
@@ -265,7 +277,6 @@ const myStyles = (theme) =>
       width: '90%',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      // alignItems: 'center',
     },
 
     workedContainer: {

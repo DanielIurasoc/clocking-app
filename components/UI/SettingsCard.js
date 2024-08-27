@@ -4,15 +4,11 @@ import { View, Text, StyleSheet } from 'react-native';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { ThemeContext } from './ThemeContext';
-import Colors from '../../constants/Colors';
 
 const SettingsCard = (props) => {
   // color context
   const { theme } = useContext(ThemeContext);
   const styles = myStyles(theme);
-  useEffect(() => {
-    console.log(theme);
-  }, []);
 
   const { title, iconName } = props;
   return (
@@ -47,7 +43,6 @@ const myStyles = (theme) =>
       width: '90%',
       justifyContent: 'center',
       alignItems: 'center',
-
       borderRadius: 20,
       backgroundColor: theme.primary1,
       elevation: 8,

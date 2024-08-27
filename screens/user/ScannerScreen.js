@@ -15,10 +15,8 @@ import { useDispatch } from 'react-redux';
 import database from '@react-native-firebase/database';
 
 import { ThemeContext } from '../../components/UI/ThemeContext.js';
-import Colors from '../../constants/Colors.js';
 
 import * as appDataActions from '../../store/actions/appData.js';
-import QRMask from '../../Resources/SVGs/QR_Mask.svg';
 
 const ScannerScreen = (props) => {
   // color context
@@ -32,7 +30,6 @@ const ScannerScreen = (props) => {
     valid: false,
   });
   const [isLoading, setIsLoading] = useState(false);
-  //const [alertShown, setAlertShown] = useState(false);
   let alertShown = useRef(false);
   const [locationId, setLocationId] = useState('');
   const [locationName, setLocationName] = useState('');

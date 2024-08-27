@@ -31,7 +31,7 @@ const TimeCard = ({ color, label, content }) => {
   );
 };
 
-const myStylestyles = (theme) =>
+const myStyles = (theme) =>
   StyleSheet.create({
     container: {
       minWidth: '27%',

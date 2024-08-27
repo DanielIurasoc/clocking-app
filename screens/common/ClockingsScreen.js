@@ -63,7 +63,6 @@ const ClockingsScreen = (props) => {
       const localData = await AsyncStorage.getItem('userClockings');
 
       if (localData) {
-        // console.log(JSON.parse(localData));
         setClockings(JSON.parse(localData));
       }
     } catch (error) {

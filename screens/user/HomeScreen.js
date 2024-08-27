@@ -1,10 +1,4 @@
-import React, {
-  useReducer,
-  useEffect,
-  useCallback,
-  useState,
-  useContext,
-} from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,10 +6,8 @@ import DatePicker from 'react-native-date-picker';
 import database from '@react-native-firebase/database';
 
 import * as appDataActions from '../../store/actions/appData.js';
-
 import Time from '../../models/Time.js';
 
-// import Colors from '../../constants/Colors.js';
 import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import commonStyles from '../../components/commonStyles.js';
 import CustomText from '../../components/CustomText.js';
@@ -74,13 +66,12 @@ const HomeScreen = (props) => {
     // hide and disable the bottom navigation for the child screen
     props.navigation.getParent()?.setOptions({
       tabBarStyle: {
-        // display: 'none',
         backgroundColor: theme.primary5,
         height: 70,
         display: 'flex',
       },
     });
-  }, []);
+  }, [theme]);
 
   // drawer open handler
   const onDrawerButtonPress = () => {
@@ -93,7 +84,6 @@ const HomeScreen = (props) => {
       .ref(`/locations/${locationId}/`)
       .once('value')
       .then((snapshot) => {
-        // setLocationName(snapshot.val().name);
         if (snapshot.val()) {
           updateDataField('locationName', snapshot.val().name);
         }
@@ -152,7 +142,6 @@ const HomeScreen = (props) => {
           labelText={'Scan location (QR Code):'}
           chosenText={locationName}
           onButtonPress={() => {
-            //props.navigation.navigate('Scanner');
             props.navigation.replace('Scanner');
           }}
           style={{ marginTop: 10 }}
@@ -164,7 +153,6 @@ const HomeScreen = (props) => {
           labelText={'Select the date:'}
           chosenText={date !== ' - ' ? date.toLocaleDateString('ro-RO') : date}
           onButtonPress={() => {
-            // setDateOpen(true);
             updateDataField('dateOpen', true);
           }}
           style={{ marginTop: 10 }}
@@ -176,14 +164,11 @@ const HomeScreen = (props) => {
           open={dateOpen}
           date={date === ' - ' ? new Date() : date}
           onConfirm={(date) => {
-            // setDateOpen(false);
             updateDataField('dateOpen', false);
-            // setDate(date);
             updateDataField('date', date);
             dispatch(appDataActions.setClockingData('date', date));
           }}
           onCancel={() => {
-            // setDateOpen(false);
             updateDataField('dateOpen', false);
           }}
         />
@@ -201,7 +186,6 @@ const HomeScreen = (props) => {
                 startTime.getMinutes().toString().padStart(2, '0')
           }
           onButtonPress={() => {
-            // setStartOpen(true);
             updateDataField('startOpen', true);
           }}
           style={{ marginTop: 10 }}
@@ -216,14 +200,11 @@ const HomeScreen = (props) => {
           open={startOpen}
           date={startTime === ' - ' ? new Date() : startTime}
           onConfirm={(date) => {
-            // setStartOpen(false);
             updateDataField('startOpen', false);
-            // setStartTime(date);
             updateDataField('startTime', date);
             dispatch(appDataActions.setClockingData('startTime', date));
           }}
           onCancel={() => {
-            // setStartOpen(false);
             updateDataField('startOpen', false);
           }}
         />
@@ -241,7 +222,6 @@ const HomeScreen = (props) => {
                 endTime.getMinutes().toString().padStart(2, '0')
           }
           onButtonPress={() => {
-            // setEndOpen(true);
             updateDataField('endOpen', true);
           }}
           style={{ marginTop: 10 }}
@@ -256,14 +236,11 @@ const HomeScreen = (props) => {
           open={endOpen}
           date={endTime === ' - ' ? new Date() : endTime}
           onConfirm={(date) => {
-            // setEndOpen(false);
             updateDataField('endOpen', false);
-            // setEndTime(date);
             updateDataField('endTime', date);
             dispatch(appDataActions.setClockingData('endTime', date));
           }}
           onCancel={() => {
-            // setEndOpen(false);
             updateDataField('endOpen', false);
           }}
         />
@@ -278,7 +255,6 @@ const HomeScreen = (props) => {
               : new Time(pauseTime.getHours(), pauseTime.getMinutes()).getTime()
           }
           onButtonPress={() => {
-            // setPauseOpen(true);
             updateDataField('pauseOpen', true);
           }}
           style={{ marginTop: 10 }}
@@ -297,14 +273,11 @@ const HomeScreen = (props) => {
               : pauseTime
           }
           onConfirm={(date) => {
-            // setPauseOpen(false);
             updateDataField('pauseOpen', false);
-            // setPauseTime(date);
             updateDataField('pauseTime', date);
             dispatch(appDataActions.setClockingData('pauseTime', date));
           }}
           onCancel={() => {
-            // setPauseOpen(false);
             updateDataField('pauseOpen', false);
           }}
         />

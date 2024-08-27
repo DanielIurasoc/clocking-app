@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
 import { Switch } from 'react-native-switch';
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Colors from '../../constants/Colors';
 
 const CustomSwitch = ({
   isEnabled,
@@ -17,10 +15,6 @@ const CustomSwitch = ({
   iconColor,
   size,
 }) => {
-  //const [isEnabled, setIsEnabled] = useState(false);
-
-  //   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-
   return (
     <Switch
       barHeight={20}
@@ -56,7 +50,5 @@ const CustomSwitch = ({
     />
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default CustomSwitch;

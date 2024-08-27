@@ -16,8 +16,6 @@ import AuthNavigator from './navigation/AuthNavigator.js';
 import UserNavigator from './navigation/UserNavigator.js';
 import AdminNavigator from './navigation/AdminNavigator.js';
 import CustomFonts from './constants/Fonts.js';
-import ColorsUpdate from './components/UI/ColorsUpdate.js';
-// import Colors from './constants/Colors.js';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,10 +25,7 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   const navFlow = useSelector((state) => state.appData.navigationFlow);
-  const darkEnabled = useSelector((state) => state.appData.darkModeOn);
-
   const dispatch = useDispatch();
-
   const { theme } = useContext(ThemeContext);
 
   // loading fonts

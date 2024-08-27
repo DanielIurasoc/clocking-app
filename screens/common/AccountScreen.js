@@ -19,7 +19,6 @@ import auth from '@react-native-firebase/auth';
 import { ThemeContext } from '../../components/UI/ThemeContext.js';
 import * as appDataActions from '../../store/actions/appData.js';
 
-import Colors from '../../constants/Colors.js';
 import HomeHeader from '../../components/UI/HomeHeader.js';
 import SettingsCard from '../../components/UI/SettingsCard.js';
 import SettingItemEdit from '../../components/UI/SettingItemEdit.js';
@@ -29,9 +28,6 @@ import CustomSwitch from '../../components/UI/CustomSwitch.js';
 const AccountScreen = (props) => {
   const [selected, setSelected] = useState('');
   const [refreshing, setRefreshing] = useState();
-  useEffect(() => {
-    console.log(theme);
-  }, []);
 
   // color context
   const { theme } = useContext(ThemeContext);

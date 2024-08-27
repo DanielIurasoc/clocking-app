@@ -35,7 +35,6 @@ export const clearClockingData = () => {
 };
 
 export const toggleDarkMode = (darkModeOn) => {
-  console.log('entered action');
   return {
     type: TOGGLE_DARK_MODE,
     payload: darkModeOn,
