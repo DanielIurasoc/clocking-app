@@ -11,6 +11,7 @@ Main features:
 - settings page which allows for personal details updates (like name, phone number, etc), app preferences, or password reset. 
 
 Some screenshots of the app:
+| Login Screen | Register Screen |
 | :---: | :---: |
 | <img width="531" height="1147" alt="image" src="https://github.com/user-attachments/assets/bdef41a7-2534-49fc-a4cd-6a1a1cdc3a93" /> | <img width="534" height="1145" alt="image" src="https://github.com/user-attachments/assets/90a93a99-e523-44ac-8b6a-bba1207322fd" /> |
 | Home page with profile picture, fields for adding an entry | Profile Picture is a button for a side drawer, with navigation fields, option buttons and app information |
